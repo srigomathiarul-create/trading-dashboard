@@ -3,82 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brokerage & P&L Calculator</title>
+    <title>Position Size Calculator - TradeCalc Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="nav.js" defer></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
 
-    <main class="max-w-3xl mx-auto mt-10 p-6 bg-gray-800 rounded-lg border border-gray-700">
-        <h1 class="text-2xl font-bold mb-6 text-blue-400">NSE / BSE Brokerage & Tax Calculator</h1>
+    <main class="max-w-2xl mx-auto mt-10 p-6 bg-gray-800 rounded-lg border border-gray-700">
+        <h1 class="text-2xl font-bold mb-6 text-green-400">Position Size & Risk Calculator</h1>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="space-y-4">
             <div>
-                <label class="block text-sm mb-1">Buy Price (₹):</label>
-                <input id="buyPrice" type="number" value="1000" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-400">
+                <label class="block text-sm mb-1">Total Capital (₹):</label>
+                <input id="capital" type="number" value="100000" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-green-400">
             </div>
             <div>
-                <label class="block text-sm mb-1">Sell Price (₹):</label>
-                <input id="sellPrice" type="number" value="1050" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-400">
+                <label class="block text-sm mb-1">Risk per Trade (%):</label>
+                <input id="risk" type="number" value="1" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-green-400">
             </div>
             <div>
-                <label class="block text-sm mb-1">Quantity:</label>
-                <input id="quantity" type="number" value="100" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-400">
+                <label class="block text-sm mb-1">Entry Price (₹):</label>
+                <input id="entry" type="number" value="500" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-green-400">
             </div>
             <div>
-                <label class="block text-sm mb-1">Brokerage Fee per order (₹):</label>
-                <input id="brokerageFee" type="number" value="20" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-400">
+                <label class="block text-sm mb-1">Stop Loss Price (₹):</label>
+                <input id="stoploss" type="number" value="490" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-green-400">
             </div>
+
+            <button onclick="calculate()" class="w-full bg-green-500 text-black font-bold py-2 rounded hover:bg-green-400 transition">Calculate Quantity</button>
         </div>
 
-        <button onclick="calculateBrokerage()" class="w-full bg-blue-500 text-black font-bold py-2 rounded hover:bg-blue-400 transition mb-6">Calculate Net P&L</button>
-
-        <div class="p-4 bg-gray-700 rounded border border-gray-600 space-y-2">
-            <div class="flex justify-between text-sm">
-                <span>Gross P&L:</span>
-                <span id="grossPnL" class="font-bold">₹0.00</span>
+        <div class="mt-6 p-4 bg-gray-700 rounded border border-gray-600 grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs text-gray-400">Max Risk Amount</p>
+                <p id="riskAmt" class="text-xl font-bold text-red-400">₹0</p>
             </div>
-            <div class="flex justify-between text-sm">
-                <span>Total Brokerage (Buy + Sell):</span>
-                <span id="totalBrokerage" class="text-red-400">₹0.00</span>
-            </div>
-            <div class="flex justify-between text-sm">
-                <span>STT / Taxes & Charges (Approx):</span>
-                <span id="totalTaxes" class="text-red-400">₹0.00</span>
-            </div>
-            <hr class="border-gray-600 my-2">
-            <div class="flex justify-between text-lg font-bold">
-                <span>Net Profit / Loss:</span>
-                <span id="netPnL" class="text-green-400">₹0.00</span>
+            <div>
+                <p class="text-xs text-gray-400">Max Quantity</p>
+                <p id="qty" class="text-xl font-bold text-green-400">0</p>
             </div>
         </div>
     </main>
 
     <script>
-        function calculateBrokerage() {
-            const buy = parseFloat(document.getElementById('buyPrice').value) || 0;
-            const sell = parseFloat(document.getElementById('sellPrice').value) || 0;
-            const qty = parseFloat(document.getElementById('quantity').value) || 0;
-            const flatFee = parseFloat(document.getElementById('brokerageFee').value) || 0;
+        function calculate() {
+            const capital = parseFloat(document.getElementById('capital').value) || 0;
+            const risk = parseFloat(document.getElementById('risk').value) || 0;
+            const entry = parseFloat(document.getElementById('entry').value) || 0;
+            const sl = parseFloat(document.getElementById('stoploss').value) || 0;
 
-            const buyTurnover = buy * qty;
-            const sellTurnover = sell * qty;
-            const totalTurnover = buyTurnover + sellTurnover;
+            const maxRisk = capital * (risk / 100);
+            const riskPerShare = Math.abs(entry - sl);
 
-            const grossPnL = sellTurnover - buyTurnover;
-            const brokerage = flatFee * 2;
-            const sttAndTaxes = totalTurnover * 0.001; 
-            const netPnL = grossPnL - brokerage - sttAndTaxes;
-
-            document.getElementById('grossPnL').innerText = '₹' + grossPnL.toFixed(2);
-            document.getElementById('totalBrokerage').innerText = '₹' + brokerage.toFixed(2);
-            document.getElementById('totalTaxes').innerText = '₹' + sttAndTaxes.toFixed(2);
-            
-            const netPnLElem = document.getElementById('netPnL');
-            netPnLElem.innerText = '₹' + netPnL.toFixed(2);
-            netPnLElem.className = netPnL >= 0 ? 'text-lg font-bold text-green-400' : 'text-lg font-bold text-red-400';
+            if (riskPerShare > 0) {
+                const quantity = Math.floor(maxRisk / riskPerShare);
+                document.getElementById('riskAmt').innerText = '₹' + maxRisk.toFixed(2);
+                document.getElementById('qty').innerText = quantity + ' shares';
+            }
         }
-        calculateBrokerage();
+        calculate();
     </script>
 </body>
 </html>

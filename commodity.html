@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commodity Calculator - TradeCalc Hub</title>
+    <title>Commodity Level Calculator - TradeCalc Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen relative pb-12">
 
     <div id="main-content">
-        <!-- Live TradingView MCX Ticker -->
+        <!-- Live TradingView MCX Ticker Tape -->
         <div class="tradingview-widget-container mb-4">
             <div class="tradingview-widget-container__widget"></div>
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -19,7 +19,8 @@
                     { "proName": "MCX:SILVER1!", "title": "SILVER" },
                     { "proName": "MCX:CRUDEOIL1!", "title": "CRUDE OIL" },
                     { "proName": "MCX:NATURALGAS1!", "title": "NATURAL GAS" },
-                    { "proName": "MCX:COPPER1!", "title": "COPPER" }
+                    { "proName": "MCX:COPPER1!", "title": "COPPER" },
+                    { "proName": "MCX:ZINC1!", "title": "ZINC" }
                 ],
                 "showSymbolLogo": true,
                 "colorTheme": "dark",
@@ -34,7 +35,7 @@
             <h1 class="text-2xl font-bold mb-4 text-amber-400">MCX Commodity Range Calculator</h1>
 
             <!-- Buttons Grid -->
-            <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700 max-h-52 overflow-y-auto" id="commodity-buttons"></div>
+            <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700 max-h-56 overflow-y-auto" id="commodity-buttons"></div>
 
             <!-- Calculator Inputs -->
             <div class="bg-amber-500 text-gray-900 p-6 rounded-t-lg shadow-md border-b-2 border-amber-600">
@@ -61,7 +62,7 @@
                 </div>
             </div>
 
-            <!-- Results Table -->
+            <!-- Table Results -->
             <div class="bg-gray-800 p-6 rounded-b-lg border border-gray-700 shadow-xl mb-6">
                 <div class="flex justify-between items-center mb-6 font-bold text-xl border-b border-gray-700 pb-3">
                     <span class="text-emerald-400">TOTAL UP: <span id="total-up">0.00</span></span>
@@ -103,16 +104,29 @@
     <script type="text/javascript">
         let currentScrip = "GOLD";
 
+        // Complete MCX Commodity List (Fixed missing lot sizes & syntax errors)
         const commodityScrips = {
             "GOLD": { cmp: 72500.00, lot: 100, stepPct: 0.000237 },
             "GOLD MINI": { cmp: 72500.00, lot: 10, stepPct: 0.00025 },
+            "GOLD GUINEA": { cmp: 58000.00, lot: 8, stepPct: 0.00025 },
+            "GOLD TEN": { cmp: 72500.00, lot: 10, stepPct: 0.00025 },
+            "GOLD PETAL": { cmp: 7250.00, lot: 1, stepPct: 0.0003 },
             "SILVER": { cmp: 85000.00, lot: 30, stepPct: 0.0004 },
             "SILVER MINI": { cmp: 85000.00, lot: 5, stepPct: 0.0004 },
+            "SILVER MICRO": { cmp: 85000.00, lot: 1, stepPct: 0.0004 },
             "CRUDE OIL": { cmp: 6200.00, lot: 100, stepPct: 0.001 },
+            "CRUDE MINI": { cmp: 6200.00, lot: 10, stepPct: 0.001 },
             "NATURAL GAS": { cmp: 185.00, lot: 1250, stepPct: 0.003 },
+            "NATURAL GAS MIN": { cmp: 185.00, lot: 250, stepPct: 0.003 },
             "COPPER": { cmp: 810.00, lot: 2500, stepPct: 0.0015 },
             "ZINC": { cmp: 260.00, lot: 5000, stepPct: 0.002 },
-            "ALUMINUM": { cmp: 235.00, lot: 5000, stepPct: 0.002 }
+            "ZINC MINI": { cmp: 260.00, lot: 1000, stepPct: 0.002 },
+            "ALUMINUM": { cmp: 235.00, lot: 5000, stepPct: 0.002 },
+            "ALUMINUM MINI": { cmp: 235.00, lot: 1000, stepPct: 0.002 },
+            "LEAD": { cmp: 180.00, lot: 5000, stepPct: 0.002 },
+            "LEAD MINI": { cmp: 180.00, lot: 1000, stepPct: 0.002 },
+            "NICKEL": { cmp: 1450.00, lot: 1500, stepPct: 0.002 },
+            "MCX BULLDEX": { cmp: 18000.00, lot: 50, stepPct: 0.0005 }
         };
 
         window.onload = function() {
@@ -125,7 +139,7 @@
             container.innerHTML = "";
             Object.keys(commodityScrips).forEach(name => {
                 const btn = document.createElement("button");
-                btn.className = `scrip-btn px-3.5 py-2 bg-gray-700 hover:bg-amber-500 hover:text-black rounded text-sm font-semibold transition text-gray-200`;
+                btn.className = `scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-amber-500 hover:text-black rounded text-xs font-semibold transition text-gray-200`;
                 btn.innerText = name;
                 btn.onclick = () => selectScrip(name);
                 container.appendChild(btn);
@@ -158,8 +172,8 @@
             const stepValue = cmp * stepPct;
             const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
 
-            document.getElementById("total-up").innerText = (cmp + (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById("total-down").innerText = (cmp - (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById("total-up").innerText = (cmp + (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+            document.getElementById("total-down").innerText = (cmp - (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
 
             const tbody = document.getElementById("levels-table");
             tbody.innerHTML = "";
@@ -175,8 +189,8 @@
                         <td class="p-4">${lot.toLocaleString('en-IN')}</td>
                         <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                         <td class="p-4 text-gray-300">${levelName}</td>
-                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</td>
+                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</td>
                         <td class="p-4 text-center">
                             <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', ${upLevel.toFixed(2)}, ${downLevel.toFixed(2)})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
                                 💬 WhatsApp
@@ -189,7 +203,7 @@
         }
 
         function shareWhatsApp(scrip, cmp, level, up, down) {
-            const text = `📊 *MCX COMMODITY ALERT: ${scrip}*\n\n📍 *CMP:* ${cmp}\n🎯 *Target Level:* ${level}\n\n📈 *UP LEVEL:* ${up}\n📉 *DOWN LEVEL:* ${down}\n\n_Shared via TradeCalc Hub (Educational Purpose Only)_`;
+            const text = `📊 *MCX COMMODITY ALERT: ${scrip}*\n\n📍 *CMP:* ${cmp}\n🎯 *Target Level:* ${level}\n\n📈 *UP LEVEL:* ${up}\n📉 *DOWN LEVEL:* ${down}\n\n_Shared via TradeCalc Hub_`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
     </script>

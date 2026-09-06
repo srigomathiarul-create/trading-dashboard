@@ -4,8 +4,9 @@ function renderNavbar() {
         <a href="index.html" class="font-bold text-xl text-blue-400">TradeCalc Hub</a>
         <div class="flex space-x-4 text-sm font-medium">
             <a href="index.html" class="hover:text-blue-400">NSE Stocks</a>
-            <a href="commodity.html" class="hover:text-blue-400">Commodity</a>
-            <a href="forex.html" class="hover:text-blue-400">Forex</a>
+            <a href="commodity.html" class="hover:text-amber-400">Commodity</a>
+            <a href="forex.html" class="hover:text-purple-400">Forex</a>
+            <a href="3veera.html" class="hover:text-emerald-400 text-emerald-400 font-semibold">Net Division SL</a>
             <a href="position-size.html" class="hover:text-green-400 text-green-400 font-semibold">Position Size Calc</a>
             <a href="brokerage.html" class="hover:text-yellow-400 text-yellow-400 font-semibold">Brokerage Calc</a>
         </div>

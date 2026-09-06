@@ -23,11 +23,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
                 <div>
                     <label class="block text-xs font-bold uppercase mb-1 text-gray-100">Lot Size</label>
-                    <input type="number" id="lot-input" readonly class="w-full bg-gray-200 text-black p-2.5 rounded font-bold border border-blue-800 focus:outline-none cursor-not-allowed">
+                    <input type="number" id="lot-input" readonly class="w-full bg-gray-200 text-black p-2.5 rounded font-bold border border-blue-800 focus:outline-none cursor-not-allowed text-lg">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase mb-1 text-gray-100">Live CMP</label>
-                    <input type="number" id="cmp-input" step="any" oninput="calculateLevels()" class="w-full bg-black text-white p-2.5 rounded font-bold border border-blue-800 focus:outline-none">
+                    <input type="number" id="cmp-input" step="any" oninput="calculateLevels()" class="w-full bg-black text-white p-2.5 rounded font-bold border border-blue-800 focus:outline-none text-lg">
                 </div>
             </div>
 
@@ -43,21 +43,22 @@
 
         <!-- Output Table Card -->
         <div class="bg-gray-800 p-6 rounded-b-lg border border-gray-700 shadow-xl mb-6">
-            <div class="flex justify-between items-center mb-6 font-bold text-lg border-b border-gray-700 pb-3">
+            <div class="flex justify-between items-center mb-6 font-bold text-xl border-b border-gray-700 pb-3">
                 <span class="text-emerald-400">TOTAL UP RANGE: <span id="total-up">0.00</span></span>
                 <span class="text-rose-500">TOTAL DOWN RANGE: <span id="total-down">0.00</span></span>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                <!-- Font size set to 18px -->
+                <table class="w-full text-left text-[18px]">
+                    <thead class="bg-gray-700 text-gray-200 uppercase text-[16px]">
                         <tr>
-                            <th class="p-3">SNAME</th>
-                            <th class="p-3">LOT</th>
-                            <th class="p-3">CMP</th>
-                            <th class="p-3">LEVEL</th>
-                            <th class="p-3 text-emerald-400">BUY LEVEL</th>
-                            <th class="p-3 text-rose-500">SELL LEVEL</th>
+                            <th class="p-4">SNAME</th>
+                            <th class="p-4">LOT</th>
+                            <th class="p-4">CMP</th>
+                            <th class="p-4">LEVEL</th>
+                            <th class="p-4 text-emerald-400">BUY LEVEL</th>
+                            <th class="p-4 text-rose-500">SELL LEVEL</th>
                         </tr>
                     </thead>
                     <tbody id="levels-table" class="divide-y divide-gray-700"></tbody>
@@ -66,12 +67,11 @@
         </div>
 
         <!-- Embedded Chart Container -->
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[550px]">
-            <div id="tradingview_chart" class="w-full h-full"></div>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]">
+            <iframe id="tradingview_iframe" class="w-full h-full border-0" src=""></iframe>
         </div>
     </main>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
         const nseScrips = {
             "NIFTY 50": { symbol: "NSE:NIFTYBEES", cmp: 24500.00, lot: 50, stepPct: 0.005 },
@@ -102,7 +102,7 @@
 
             Object.keys(nseScrips).forEach(name => {
                 const btn = document.createElement("button");
-                btn.className = `scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition text-gray-200`;
+                btn.className = `scrip-btn px-3.5 py-2 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition text-gray-200`;
                 btn.innerText = name;
                 btn.onclick = () => selectScrip(name);
                 container.appendChild(btn);
@@ -152,12 +152,12 @@
 
                 const row = `
                     <tr class="hover:bg-gray-800">
-                        <td class="p-3 font-bold text-blue-400">${currentScrip}</td>
-                        <td class="p-3">${lot.toLocaleString('en-IN')}</td>
-                        <td class="p-3">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-3 text-gray-400">L${i} (Range ${String.fromCharCode(64 + i)})</td>
-                        <td class="p-3 font-bold text-emerald-400">${buyLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-3 font-bold text-rose-500">${sellLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 font-bold text-blue-400">${currentScrip}</td>
+                        <td class="p-4">${lot.toLocaleString('en-IN')}</td>
+                        <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 text-gray-300">L${i} (Range ${String.fromCharCode(64 + i)})</td>
+                        <td class="p-4 font-bold text-emerald-400">${buyLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 font-bold text-rose-500">${sellLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
@@ -165,19 +165,9 @@
         }
 
         function loadChart(symbolName) {
-            document.getElementById("tradingview_chart").innerHTML = "";
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": symbolName,
-                "interval": "D",
-                "timezone": "Asia/Kolkata",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
-            });
+            const formattedSymbol = encodeURIComponent(symbolName);
+            const iframe = document.getElementById("tradingview_iframe");
+            iframe.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${formattedSymbol}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata`;
         }
 
         window.addEventListener("DOMContentLoaded", () => {

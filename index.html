@@ -3,18 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Market Analysis - TradeCalc Hub</title>
+    <title>NSE & MCX Trade Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="nav.js" defer></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <div id="navbar"></div>
 
+    <!-- Live TradingView Ticker Tape Widget -->
+    <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {
+            "symbols": [
+                { "proName": "NSE:NIFTY", "title": "NIFTY 50" },
+                { "proName": "NSE:BANKNIFTY", "title": "BANK NIFTY" },
+                { "proName": "MCX:GOLD1!", "title": "GOLD" },
+                { "proName": "MCX:SILVER1!", "title": "SILVER" },
+                { "proName": "MCX:CRUDEOIL1!", "title": "CRUDE OIL" },
+                { "proName": "MCX:NATURALGAS1!", "title": "NATURAL GAS" }
+            ],
+            "showSymbolLogo": true,
+            "colorTheme": "dark",
+            "isTransparent": false,
+            "displayMode": "adaptive",
+            "locale": "in"
+        }
+        </script>
+    </div>
+
     <main class="p-6 max-w-7xl mx-auto">
-        <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE Market Analysis & Level Calculator</h1>
+        <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE & MCX Level Calculator</h1>
         
-        <!-- Expanded Scrips Buttons -->
-        <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700" id="nse-buttons"></div>
+        <!-- Scrips Category Selector -->
+        <div class="flex gap-4 mb-4">
+            <button onclick="filterCategory('ALL')" id="cat-all" class="px-4 py-2 bg-blue-600 rounded font-bold text-sm">ALL SCRIPS</button>
+            <button onclick="filterCategory('NSE')" id="cat-nse" class="px-4 py-2 bg-gray-700 rounded font-bold text-sm">NSE (50 SCRIPS)</button>
+            <button onclick="filterCategory('MCX')" id="cat-mcx" class="px-4 py-2 bg-gray-700 rounded font-bold text-sm">MCX COMMODITY</button>
+        </div>
+
+        <!-- Buttons Container -->
+        <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700 max-h-48 overflow-y-auto" id="scrip-buttons"></div>
 
         <!-- Calculator Inputs Header -->
         <div class="bg-blue-600 text-white p-6 rounded-t-lg shadow-md border-b-2 border-blue-700">
@@ -58,57 +87,117 @@
                             <th class="p-4">LEVEL</th>
                             <th class="p-4 text-emerald-400">BUY LEVEL</th>
                             <th class="p-4 text-rose-500">SELL LEVEL</th>
+                            <th class="p-4 text-center">ACTION</th>
                         </tr>
                     </thead>
                     <tbody id="levels-table" class="divide-y divide-gray-700"></tbody>
                 </table>
             </div>
         </div>
-
-        <!-- Embedded Chart Container -->
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]" id="chart-container">
-            <div id="tradingview_chart" class="w-full h-full"></div>
-        </div>
     </main>
 
-    <!-- Official TradingView Script -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    
     <script type="text/javascript">
-        // Using Futures (1!) for Indices and BSE for stocks to bypass embed blocks
-        const nseScrips = {
-            "NIFTY 50": { symbol: "NSE:NIFTY1!", cmp: 24500.00, lot: 50, stepPct: 0.005 },
-            "BANK NIFTY": { symbol: "NSE:BANKNIFTY1!", cmp: 51200.00, lot: 15, stepPct: 0.005 },
-            "FIN NIFTY": { symbol: "NSE:FINNIFTY1!", cmp: 23100.00, lot: 40, stepPct: 0.005 },
-            "RELIANCE": { symbol: "BSE:RELIANCE", cmp: 2950.00, lot: 250, stepPct: 0.008 },
-            "TCS": { symbol: "BSE:TCS", cmp: 4150.00, lot: 175, stepPct: 0.008 },
-            "INFOSYS": { symbol: "BSE:INFY", cmp: 1820.00, lot: 400, stepPct: 0.008 },
-            "HDFC BANK": { symbol: "BSE:HDFCBANK", cmp: 1640.00, lot: 550, stepPct: 0.008 },
-            "ICICI BANK": { symbol: "BSE:ICICIBANK", cmp: 1210.00, lot: 700, stepPct: 0.008 },
-            "SBIN": { symbol: "BSE:SBIN", cmp: 820.00, lot: 1500, stepPct: 0.008 },
-            "TATA MOTORS": { symbol: "BSE:TATAMOTORS", cmp: 980.00, lot: 1000, stepPct: 0.01 },
-            "AXIS BANK": { symbol: "BSE:AXISBANK", cmp: 1180.00, lot: 625, stepPct: 0.008 },
-            "LT": { symbol: "BSE:LT", cmp: 3600.00, lot: 150, stepPct: 0.008 },
-            "BHARTI AIRTEL": { symbol: "BSE:BHARTIARTL", cmp: 1450.00, lot: 475, stepPct: 0.008 },
-            "WIPRO": { symbol: "BSE:WIPRO", cmp: 520.00, lot: 1500, stepPct: 0.01 },
-            "ITC": { symbol: "BSE:ITC", cmp: 490.00, lot: 1600, stepPct: 0.008 },
-            "MARUTI": { symbol: "BSE:MARUTI", cmp: 12300.00, lot: 100, stepPct: 0.008 },
-            "ADANI PORTS": { symbol: "BSE:ADANIPORTS", cmp: 1350.00, lot: 625, stepPct: 0.01 },
-            "BAJAJ FINANCE": { symbol: "BSE:BAJFINANCE", cmp: 6900.00, lot: 125, stepPct: 0.01 }
+        const allScrips = {
+            // COMMODITY (MCX)
+            "GOLD": { category: "MCX", cmp: 72000.00, lot: 100, stepPct: 0.0025 },
+            "GOLD MINI": { category: "MCX", cmp: 71800.00, lot: 10, stepPct: 0.0025 },
+            "GOLD GUINEA": { category: "MCX", cmp: 58000.00, lot: 1, stepPct: 0.0025 },
+            "GOLD PETAL": { category: "MCX", cmp: 7200.00, lot: 1, stepPct: 0.0025 },
+            "SILVER": { category: "MCX", cmp: 85000.00, lot: 30, stepPct: 0.0035 },
+            "SILVER MINI": { category: "MCX", cmp: 84800.00, lot: 5, stepPct: 0.0035 },
+            "SILVER MICRO": { category: "MCX", cmp: 84900.00, lot: 1, stepPct: 0.0035 },
+            "CRUDE OIL": { category: "MCX", cmp: 6400.00, lot: 100, stepPct: 0.005 },
+            "CRUDE MINI": { category: "MCX", cmp: 6410.00, lot: 10, stepPct: 0.005 },
+            "NATURAL GAS": { category: "MCX", cmp: 210.00, lot: 1250, stepPct: 0.008 },
+            "NATURAL GAS MIN": { category: "MCX", cmp: 210.50, lot: 250, stepPct: 0.008 },
+            "COPPER": { category: "MCX", cmp: 780.00, lot: 2500, stepPct: 0.005 },
+            "ZINC": { category: "MCX", cmp: 260.00, lot: 5000, stepPct: 0.005 },
+            "LEAD": { category: "MCX", cmp: 185.00, lot: 5000, stepPct: 0.005 },
+            "ALUMINIUM": { category: "MCX", cmp: 230.00, lot: 5000, stepPct: 0.005 },
+
+            // NSE 50 SCRIPS
+            "NIFTY 50": { category: "NSE", cmp: 24500.00, lot: 50, stepPct: 0.005 },
+            "BANK NIFTY": { category: "NSE", cmp: 51200.00, lot: 15, stepPct: 0.005 },
+            "FIN NIFTY": { category: "NSE", cmp: 23100.00, lot: 40, stepPct: 0.005 },
+            "RELIANCE": { category: "NSE", cmp: 2950.00, lot: 250, stepPct: 0.008 },
+            "TCS": { category: "NSE", cmp: 4150.00, lot: 175, stepPct: 0.008 },
+            "INFOSYS": { category: "NSE", cmp: 1820.00, lot: 400, stepPct: 0.008 },
+            "HDFC BANK": { category: "NSE", cmp: 1640.00, lot: 550, stepPct: 0.008 },
+            "ICICI BANK": { category: "NSE", cmp: 1210.00, lot: 700, stepPct: 0.008 },
+            "SBIN": { category: "NSE", cmp: 820.00, lot: 1500, stepPct: 0.008 },
+            "BHARTI AIRTEL": { category: "NSE", cmp: 1450.00, lot: 475, stepPct: 0.008 },
+            "L&T": { category: "NSE", cmp: 3600.00, lot: 150, stepPct: 0.008 },
+            "ITC": { category: "NSE", cmp: 490.00, lot: 1600, stepPct: 0.008 },
+            "AXIS BANK": { category: "NSE", cmp: 1180.00, lot: 625, stepPct: 0.008 },
+            "KOTAK BANK": { category: "NSE", cmp: 1780.00, lot: 400, stepPct: 0.008 },
+            "TATA MOTORS": { category: "NSE", cmp: 980.00, lot: 1000, stepPct: 0.01 },
+            "M&M": { category: "NSE", cmp: 2800.00, lot: 350, stepPct: 0.01 },
+            "MARUTI": { category: "NSE", cmp: 12300.00, lot: 100, stepPct: 0.008 },
+            "SUN PHARMA": { category: "NSE", cmp: 1720.00, lot: 350, stepPct: 0.008 },
+            "NTPC": { category: "NSE", cmp: 400.00, lot: 1500, stepPct: 0.01 },
+            "POWERGRID": { category: "NSE", cmp: 330.00, lot: 1800, stepPct: 0.01 },
+            "TATA STEEL": { category: "NSE", cmp: 160.00, lot: 5500, stepPct: 0.01 },
+            "HCL TECH": { category: "NSE", cmp: 1680.00, lot: 350, stepPct: 0.008 },
+            "WIPRO": { category: "NSE", cmp: 520.00, lot: 1500, stepPct: 0.01 },
+            "ULTRATECH": { category: "NSE", cmp: 11200.00, lot: 100, stepPct: 0.008 },
+            "ASIAN PAINTS": { category: "NSE", cmp: 2900.00, lot: 200, stepPct: 0.008 },
+            "TITAN": { category: "NSE", cmp: 3400.00, lot: 175, stepPct: 0.008 },
+            "BAJAJ FINANCE": { category: "NSE", cmp: 6900.00, lot: 125, stepPct: 0.01 },
+            "BAJAJ FINSERV": { category: "NSE", cmp: 1850.00, lot: 500, stepPct: 0.01 },
+            "ADANI PORTS": { category: "NSE", cmp: 1350.00, lot: 625, stepPct: 0.01 },
+            "ADANI ENT": { category: "NSE", cmp: 3100.00, lot: 300, stepPct: 0.01 },
+            "COAL INDIA": { category: "NSE", cmp: 510.00, lot: 1400, stepPct: 0.01 },
+            "ONGC": { category: "NSE", cmp: 320.00, lot: 3800, stepPct: 0.01 },
+            "JSW STEEL": { category: "NSE", cmp: 930.00, lot: 675, stepPct: 0.01 },
+            "HINDALCO": { category: "NSE", cmp: 680.00, lot: 1400, stepPct: 0.01 },
+            "GRASIM": { category: "NSE", cmp: 2700.00, lot: 250, stepPct: 0.008 },
+            "TECH MAHINDRA": { category: "NSE", cmp: 1550.00, lot: 600, stepPct: 0.008 },
+            "INDUSIND BANK": { category: "NSE", cmp: 1400.00, lot: 500, stepPct: 0.01 },
+            "BPCL": { category: "NSE", cmp: 350.00, lot: 1800, stepPct: 0.01 },
+            "HERO MOTOCORP": { category: "NSE", cmp: 5300.00, lot: 150, stepPct: 0.01 },
+            "EICHER MOTORS": { category: "NSE", cmp: 4800.00, lot: 175, stepPct: 0.01 },
+            "NESTLE INDIA": { category: "NSE", cmp: 2500.00, lot: 250, stepPct: 0.008 },
+            "HUNI LEVER": { category: "NSE", cmp: 2750.00, lot: 300, stepPct: 0.008 },
+            "BRITANNIA": { category: "NSE", cmp: 5700.00, lot: 200, stepPct: 0.008 },
+            "TATACONSUM": { category: "NSE", cmp: 1180.00, lot: 450, stepPct: 0.008 },
+            "APOLLO HOSP": { category: "NSE", cmp: 6700.00, lot: 125, stepPct: 0.01 },
+            "DIVIS LAB": { category: "NSE", cmp: 4900.00, lot: 200, stepPct: 0.01 },
+            "CIPLA": { category: "NSE", cmp: 1580.00, lot: 650, stepPct: 0.008 },
+            "DR REDDY": { category: "NSE", cmp: 6900.00, lot: 125, stepPct: 0.008 },
+            "SBILIFE": { category: "NSE", cmp: 1820.00, lot: 375, stepPct: 0.008 },
+            "HDFCLIFE": { category: "NSE", cmp: 710.00, lot: 1100, stepPct: 0.008 }
         };
 
         let currentScrip = "NIFTY 50";
+        let activeCategory = "ALL";
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll("#cat-all, #cat-nse, #cat-mcx").forEach(b => {
+                b.classList.remove("bg-blue-600");
+                b.classList.add("bg-gray-700");
+            });
+
+            if (cat === 'ALL') document.getElementById('cat-all').classList.replace('bg-gray-700', 'bg-blue-600');
+            if (cat === 'NSE') document.getElementById('cat-nse').classList.replace('bg-gray-700', 'bg-blue-600');
+            if (cat === 'MCX') document.getElementById('cat-mcx').classList.replace('bg-gray-700', 'bg-blue-600');
+
+            renderButtons();
+        }
 
         function renderButtons() {
-            const container = document.getElementById("nse-buttons");
+            const container = document.getElementById("scrip-buttons");
             container.innerHTML = "";
 
-            Object.keys(nseScrips).forEach(name => {
-                const btn = document.createElement("button");
-                btn.className = `scrip-btn px-3.5 py-2 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition text-gray-200`;
-                btn.innerText = name;
-                btn.onclick = () => selectScrip(name);
-                container.appendChild(btn);
+            Object.keys(allScrips).forEach(name => {
+                const scrip = allScrips[name];
+                if (activeCategory === "ALL" || scrip.category === activeCategory) {
+                    const btn = document.createElement("button");
+                    btn.className = `scrip-btn px-3.5 py-2 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition text-gray-200`;
+                    btn.innerText = name;
+                    btn.onclick = () => selectScrip(name);
+                    container.appendChild(btn);
+                }
             });
         }
 
@@ -116,7 +205,7 @@
             currentScrip = name;
             document.getElementById("header-title").innerText = name;
 
-            const item = nseScrips[name];
+            const item = allScrips[name];
             document.getElementById("lot-input").value = item.lot;
             document.getElementById("cmp-input").value = item.cmp;
 
@@ -132,13 +221,12 @@
             });
 
             calculateLevels();
-            loadChart(item.symbol);
         }
 
         function calculateLevels() {
             const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
             const lot = parseFloat(document.getElementById("lot-input").value) || 0;
-            const stepPct = nseScrips[currentScrip]?.stepPct || 0.008;
+            const stepPct = allScrips[currentScrip]?.stepPct || 0.008;
             const stepValue = cmp * stepPct;
 
             const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
@@ -152,39 +240,37 @@
             for (let i = 1; i <= selectedRange; i++) {
                 const buyLevel = cmp + (stepValue * i);
                 const sellLevel = cmp - (stepValue * i);
+                const levelName = `L${i} (Range ${String.fromCharCode(64 + i)})`;
 
-                // Table Rows locked to 18px size
                 const row = `
                     <tr class="hover:bg-gray-800 text-[18px]">
                         <td class="p-4 font-bold text-blue-400">${currentScrip}</td>
                         <td class="p-4">${lot.toLocaleString('en-IN')}</td>
                         <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-4 text-gray-300">L${i} (Range ${String.fromCharCode(64 + i)})</td>
+                        <td class="p-4 text-gray-300">${levelName}</td>
                         <td class="p-4 font-bold text-emerald-400">${buyLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                         <td class="p-4 font-bold text-rose-500">${sellLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', ${buyLevel.toFixed(2)}, ${sellLevel.toFixed(2)})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
+                                💬 WhatsApp
+                            </button>
+                        </td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
             }
         }
 
-        function loadChart(symbolName) {
-            // Hard clear the div before loading to prevent script bugs
-            const chartContainer = document.getElementById("chart-container");
-            chartContainer.innerHTML = '<div id="tradingview_chart" class="w-full h-full"></div>';
+        function shareWhatsApp(scrip, cmp, level, buy, sell) {
+            const text = `📊 *TRADE ALERT: ${scrip}*\n\n` +
+                         `📍 *CMP:* ${cmp}\n` +
+                         `🎯 *Target Level:* ${level}\n\n` +
+                         `🟢 *BUY LEVEL:* ${buy}\n` +
+                         `🔴 *SELL LEVEL:* ${sell}\n\n` +
+                         `_Shared via TradeCalc Hub_`;
             
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": symbolName,
-                "interval": "15",
-                "timezone": "Asia/Kolkata",
-                "theme": "dark",
-                "style": "1",
-                "locale": "in",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
-            });
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
         }
 
         window.addEventListener("DOMContentLoaded", () => {

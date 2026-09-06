@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCX Web Trading Calculator</title>
+  <style>
+    :root {
+      --bg-dark: #11141d;
+      --card-bg: #181c27;
+      --accent-gold: #e5b842;
+      --accent-green: #00e676;
+      --accent-red: #ff5252;
+      --text-main: #ffffff;
+      --text-muted: #a0a6b5;
+      --border-color: #272c3d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Gold Banner Header */
+    .gold-banner {
+      background: linear-gradient(180deg, #f3d078 0%, #c89832 100%);
+      color: #000;
+      border-radius: 8px 8px 0 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .gold-banner h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+    }
+
+    .banner-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto 15px auto;
+    }
+
+    .control-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .control-box label {
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .control-box select, .control-box input {
+      background: #000;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      outline: none;
+    }
+
+    .range-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      flex-wrap: wrap;
+    }
+
+    .range-selector label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Total Metrics Bar */
+    .metrics-bar {
+      background: #141722;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 1.05rem;
+      font-weight: bold;
+    }
+
+    .total-up { color: var(--accent-green); }
+    .total-down { color: var(--accent-red); }
+
+    /* Results Table */
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    th {
+      background: #0d0f17;
+      color: var(--accent-gold);
+      padding: 12px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+    }
+
+    .buy-val { color: var(--accent-green); }
+    .sell-val { color: var(--accent-red); }
+
+    .wa-btn {
+      background: #25d366;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Live Stream Container */
+    .streaming-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .streaming-header {
+      color: var(--accent-gold);
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #tvChartContainer {
+      height: 230px;
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-card h2 {
+      margin-bottom: 15px;
+      color: var(--accent-gold);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      background: #11141d;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      border-radius: 6px;
+      margin-top: 10px;
+      outline: none;
+    }
+
+    .btn-gold {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background: var(--accent-gold);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .hidden { display: none !important; }
+    .error-msg { color: var(--accent-red); font-size: 0.8rem; margin-top: 10px; }
+  </style>
+  <!-- TradingView Library -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+
+  <!-- OTP Login Modal -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-card">
+      <h2>MCX Calculator Login</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Enter 10-digit mobile number</p>
+
+      <div id="phoneStep">
+        <input type="tel" id="mobileNum" class="input-field" placeholder="Mobile Number" maxlength="10" />
+        <button class="btn-gold" onclick="sendOTPToAdmin()">Request OTP via WhatsApp</button>
+      </div>
+
+      <div id="otpStep" class="hidden">
+        <input type="text" id="otpInput" class="input-field" placeholder="Enter Received OTP" maxlength="4" />
+        <button class="btn-gold" onclick="verifyOTP()">Verify & Access</button>
+      </div>
+
+      <div id="modalError" class="error-msg hidden"></div>
+    </div>
+  </div>
+
+  <!-- Calculator Application -->
+  <div id="appContainer" class="container hidden">
+    
+    <!-- Gold Banner -->
+    <div class="gold-banner">
+      <h1 id="bannerTitle">GOLD</h1>
+      
+      <div class="banner-controls">
+        <div class="control-box">
+          <label>Scrip Select</label>
+          <select id="scripSelect" onchange="onScripChange()">
+            <!-- Precious Metals -->
+            <option value="MCX:GOLD1!" data-lot="100" data-name="GOLD" data-net="182" data-cmp="152815">GOLD</option>
+            <option value="MCX:GOLDM1!" data-lot="10" data-name="GOLD MINI" data-net="182" data-cmp="152815">GOLD MINI</option>
+            <option value="MCX:GOLD1!" data-lot="8" data-name="GOLD GUINEA" data-net="182" data-cmp="122820">GOLD GUINEA</option>
+            <option value="MCX:GOLD1!" data-lot="10" data-name="GOLD TEN" data-net="182" data-cmp="152815">GOLD TEN</option>
+            <option value="MCX:GOLD1!" data-lot="1" data-name="GOLD PETAL" data-net="182" data-cmp="15356">GOLD PETAL</option>
+            <option value="MCX:SILVER1!" data-lot="30" data-name="SILVER" data-net="350" data-cmp="237500">SILVER</option>
+            <option value="MCX:SILVERM1!" data-lot="5" data-name="SILVER MINI" data-net="350" data-cmp="237500">SILVER MINI</option>
+            <option value="MCX:SILVERMIC1!" data-lot="1" data-name="SILVER MICRO" data-net="350" data-cmp="237500">SILVER MICRO</option>
+            
+            <!-- Energy -->
+            <option value="MCX:CRUDEOIL1!" data-lot="100" data-name="CRUDE OIL" data-net="45" data-cmp="8571">CRUDE OIL</option>
+            <option value="MCX:CRUDEOILM1!" data-lot="10" data-name="CRUDE MINI" data-net="45" data-cmp="8571">CRUDE MINI</option>
+            <option value="MCX:NATURALGAS1!" data-lot="1250" data-name="NATURAL GAS" data-net="8" data-cmp="281">NATURAL GAS</option>
+            <option value="MCX:NATGASMINI1!" data-lot="250" data-name="NATURAL GAS MINI" data-net="8" data-cmp="281">NATURAL GAS MINI</option>
+
+            <!-- Base Metals -->
+            <option value="MCX:ALUMINIUM1!" data-lot="5000" data-name="ALUMINUM" data-net="4" data-cmp="348">ALUMINUM</option>
+            <option value="MCX:ALUMINIUM1!" data-lot="1000" data-name="ALUMINUM MINI" data-net="4" data-cmp="348">ALUMINUM MINI</option>
+            <option value="MCX:LEAD1!" data-lot="5000" data-name="LEAD" data-net="4" data-cmp="197">LEAD</option>
+            <option value="MCX:LEAD1!" data-lot="1000" data-name="LEAD MINI" data-net="4" data-cmp="197">LEAD MINI</option>
+            <option value="MCX:ZINC1!" data-lot="5000" data-name="ZINC" data-net="5" data-cmp="418">ZINC</option>
+            <option value="MCX:ZINC1!" data-lot="1000" data-name="ZINC MINI" data-net="5" data-cmp="418">ZINC MINI</option>
+            <option value="MCX:COPPER1!" data-lot="2500" data-name="COPPER" data-net="12" data-cmp="1378">COPPER</option>
+            <option value="MCX:NICKEL1!" data-lot="1500" data-name="NICKEL" data-net="20" data-cmp="1617">NICKEL</option>
+          </select>
+        </div>
+
+        <div class="control-box">
+          <label>Live CMP</label>
+          <input type="number" id="cmpInput" value="152815" oninput="calculateTargets()" />
+        </div>
+      </div>
+
+      <div class="range-selector">
+        <label><input type="radio" name="range" value="1" checked onchange="calculateTargets()"> RANGE A (1 Level)</label>
+        <label><input type="radio" name="range" value="2" onchange="calculateTargets()"> RANGE B (2 Levels)</label>
+        <label><input type="radio" name="range" value="3" onchange="calculateTargets()"> RANGE C (3 Levels)</label>
+        <label><input type="radio" name="range" value="4" onchange="calculateTargets()"> RANGE D (4 Levels)</label>
+        <label><input type="radio" name="range" value="5" onchange="calculateTargets()"> RANGE E (5 Levels)</label>
+      </div>
+    </div>
+
+    <!-- Total Metrics -->
+    <div class="metrics-bar">
+      <div class="total-up">TOTAL UP (CMP + NET): <span id="totalUp">153725.00</span></div>
+      <div class="total-down">TOTAL DOWN (CMP - NET): <span id="totalDown">151905.00</span></div>
+    </div>
+
+    <!-- Multi-Level Results Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>SNAME</th>
+            <th>LOT</th>
+            <th>CMP</th>
+            <th>LEVEL</th>
+            <th>BUY LEVEL</th>
+            <th>SELL LEVEL</th>
+            <th>WHATSAPP ALERT</th>
+          </tr>
+        </thead>
+        <tbody id="levelsTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Live Market Rate Card (Option 2) -->
+    <div class="streaming-card">
+      <div class="streaming-header">
+        <span id="streamTitle">LIVE STREAMING MARKET RATE: GOLD</span>
+        <span style="font-size:0.75rem; color: #888;">Realtime Exchange Feed</span>
+      </div>
+      
+      <div id="tvChartContainer"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const ADMIN_PHONE = "8939494745";
+    let activeOTP = "";
+
+    function sendOTPToAdmin() {
+      const phone = document.getElementById('mobileNum').value.trim();
+      if (!/^[6-9]\d{9}$/.test(phone)) {
+        showError("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+
+      activeOTP = Math.floor(1000 + Math.random() * 9000).toString();
+
+      document.getElementById('phoneStep').classList.add('hidden');
+      document.getElementById('otpStep').classList.remove('hidden');
+      hideError();
+
+      const waMsg = encodeURIComponent(`*MCX Calculator OTP Request*\nUser Mobile: ${phone}\nGenerated OTP: ${activeOTP}`);
+      window.open(`https://api.whatsapp.com/send?phone=91${ADMIN_PHONE}&text=${waMsg}`, '_blank');
+    }
+
+    function verifyOTP() {
+      const userOTP = document.getElementById('otpInput').value.trim();
+      if (userOTP === activeOTP && activeOTP !== "") {
+        document.getElementById('loginModal').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        onScripChange();
+      } else {
+        showError("Invalid OTP. Please check with administrator.");
+      }
+    }
+
+    function showError(msg) {
+      const err = document.getElementById('modalError');
+      err.textContent = msg;
+      err.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('modalError').classList.add('hidden');
+    }
+
+    function onScripChange() {
+      const select = document.getElementById('scripSelect');
+      const selected = select.options[select.selectedIndex];
+      const name = selected.getAttribute('data-name');
+      const symbol = select.value;
+      const defaultCmp = selected.getAttribute('data-cmp');
+
+      document.getElementById('bannerTitle').textContent = name;
+      document.getElementById('cmpInput').value = defaultCmp;
+      document.getElementById('streamTitle').textContent = `LIVE STREAMING MARKET RATE: ${name}`;
+
+      calculateTargets();
+      loadLiveRateWidget(symbol);
+    }
+
+    function calculateTargets() {
+      const select = document.getElementById('scripSelect');
+      const selected = select.options[select.selectedIndex];
+      
+      const scripName = selected.getAttribute('data-name');
+      const lotSize = selected.getAttribute('data-lot');
+      const cmp = parseFloat(document.getElementById('cmpInput').value) || 0;
+      const baseNet = parseFloat(selected.getAttribute('data-net')) || 100;
+      const maxRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 1;
+      
+      const tbody = document.getElementById('levelsTableBody');
+      tbody.innerHTML = '';
+
+      let maxBuyLevel = cmp;
+      let maxSellLevel = cmp;
+
+      for (let i = 1; i <= maxRange; i++) {
+        const stepNet = baseNet * i;
+        const buyLevel = (cmp + stepNet).toFixed(2);
+        const sellLevel = (cmp - stepNet).toFixed(2);
+
+        maxBuyLevel = buyLevel;
+        maxSellLevel = sellLevel;
+
+        const rowHTML = `
+          <tr>
+            <td>${scripName}</td>
+            <td>${lotSize}</td>
+            <td>${cmp.toLocaleString('en-IN')}</td>
+            <td>L${i} (Range ${String.fromCharCode(64 + i)})</td>
+            <td class="buy-val">${buyLevel}</td>
+            <td class="sell-val">${sellLevel}</td>
+            <td>
+              <button class="wa-btn" onclick="sendWhatsAppAlert('${scripName}', '${cmp}', 'L${i}', '${buyLevel}', '${sellLevel}')">📲 Send L${i} Alert</button>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += rowHTML;
+      }
+
+      document.getElementById('totalUp').textContent = maxBuyLevel;
+      document.getElementById('totalDown').textContent = maxSellLevel;
+    }
+
+    function loadLiveRateWidget(symbol) {
+      document.getElementById('tvChartContainer').innerHTML = ''; // Clear container
+
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": symbol,
+        "interval": "D",
+        "timezone": "Asia/Kolkata",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#181c27",
+        "enable_publishing": false,
+        "hide_top_toolbar": true,
+        "hide_side_toolbar": true,
+        "hide_legend": false,
+        "save_image": false,
+        "container_id": "tvChartContainer"
+      });
+    }
+
+    function sendWhatsAppAlert(scrip, cmp, level, buy, sell) {
+      const message = encodeURIComponent(`*MCX Alert - ${scrip} (${level})*\nCMP: ${cmp}\nBuy Level: ${buy}\nSell Level: ${sell}`);
+      window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+    }
+  </script>
+</body>
+</html>

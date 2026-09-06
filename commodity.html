@@ -3,74 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commodity Technical Analysis - TradeCalc Hub</title>
+    <title>Commodity Dashboard - TradeCalc Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="nav.js" defer></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <div id="navbar"></div>
 
-    <main class="p-6 max-w-7xl mx-auto">
-        <h1 class="text-2xl font-bold mb-4 text-amber-400">Commodity Technical Analysis</h1>
+    <main class="p-6 max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4 text-amber-400">Commodity Scrips</h1>
         
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <!-- Sidebar -->
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h2 class="text-lg font-semibold mb-3 text-gray-300">Select Commodity</h2>
-                <select onchange="loadChart(this.value)" class="w-full bg-gray-700 text-white p-2 rounded border border-gray-600 focus:outline-none focus:border-amber-400">
-                    <optgroup label="Gold">
-                        <option value="OANDA:XAUUSD" selected>GOLD</option>
-                        <option value="OANDA:XAUUSD">GOLD MINI</option>
-                    </optgroup>
-                    <optgroup label="Silver">
-                        <option value="OANDA:XAGUSD">SILVER</option>
-                        <option value="OANDA:XAGUSD">SILVER MINI</option>
-                        <option value="OANDA:XAGUSD">SILVER MICRO</option>
-                    </optgroup>
-                    <optgroup label="Energy">
-                        <option value="TVC:USOIL">CRUDE OIL</option>
-                        <option value="TVC:USOIL">CRUDE MINI</option>
-                        <option value="TVC:NATGAS">NATURAL GAS</option>
-                        <option value="TVC:NATGAS">NATURAL GAS MINI</option>
-                    </optgroup>
-                    <optgroup label="Metals">
-                        <option value="CAPITALCOM:ALUMINIUM">ALUMINUM</option>
-                        <option value="CAPITALCOM:LEAD">LEAD</option>
-                        <option value="CAPITALCOM:ZINC">ZINC</option>
-                        <option value="CAPITALCOM:COPPER">COPPER</option>
-                        <option value="CAPITALCOM:NICKEL">NICKEL</option>
-                    </optgroup>
-                </select>
-            </div>
+        <!-- Scrip Selection Dropdown -->
+        <div class="mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <label for="commodity-select" class="block text-sm font-medium text-gray-300 mb-2">Choose Scrip:</label>
+            <select id="commodity-select" onchange="showScripDetails(this.value)" class="w-full bg-gray-700 text-white p-2.5 rounded border border-gray-600 focus:outline-none focus:border-amber-400 font-semibold text-lg">
+                <optgroup label="Gold">
+                    <option value="GOLD">GOLD</option>
+                    <option value="GOLD MINI" selected>GOLD MINI</option>
+                    <option value="GOLD GUINEA">GOLD GUINEA</option>
+                    <option value="GOLD TEN">GOLD TEN</option>
+                    <option value="GOLD PETAL">GOLD PETAL</option>
+                </optgroup>
+                <optgroup label="Silver">
+                    <option value="SILVER">SILVER</option>
+                    <option value="SILVER MINI">SILVER MINI</option>
+                    <option value="SILVER MICRO">SILVER MICRO</option>
+                </optgroup>
+                <optgroup label="Energy">
+                    <option value="CRUDE">CRUDE</option>
+                    <option value="CRUDE MINI">CRUDE MINI</option>
+                    <option value="NATURAL GAS">NATURAL GAS</option>
+                    <option value="NATURAL GAS MINI">NATURAL GAS MINI</option>
+                </optgroup>
+                <optgroup label="Metals">
+                    <option value="ALUMINUM">ALUMINUM</option>
+                    <option value="ALUMINUM MINI">ALUMINUM MINI</option>
+                    <option value="LEAD">LEAD</option>
+                    <option value="LEAD MINI">LEAD MINI</option>
+                    <option value="ZINC">ZINC</option>
+                    <option value="ZINC MINI">ZINC MINI</option>
+                    <option value="COPPER">COPPER</option>
+                    <option value="NICKEL">NICKEL</option>
+                </optgroup>
+            </select>
+        </div>
 
-            <!-- Chart Window -->
-            <div class="lg:col-span-3 bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]">
-                <div id="tradingview_chart" style="height:100%;width:100%"></div>
-            </div>
+        <!-- Dynamic Content Card -->
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 shadow-lg">
+            <h2 id="selected-scrip-title" class="text-3xl font-extrabold text-amber-400 mb-2">GOLD MINI</h2>
+            <p id="selected-scrip-info" class="text-gray-300 text-lg">Selected Commodity: <span class="font-semibold text-white">GOLD MINI</span></p>
         </div>
     </main>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script type="text/javascript">
-        function loadChart(symbolName) {
-            document.getElementById("tradingview_chart").innerHTML = "";
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": symbolName,
-                "interval": "D",
-                "timezone": "Asia/Kolkata",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
-            });
+    <script>
+        function showScripDetails(scripName) {
+            document.getElementById('selected-scrip-title').innerText = scripName;
+            document.getElementById('selected-scrip-info').innerHTML = 'Selected Commodity: <span class="font-semibold text-white">' + scripName + '</span>';
         }
-
-        window.addEventListener('load', function() {
-            loadChart('OANDA:XAUUSD');
-        });
     </script>
 </body>
 </html>

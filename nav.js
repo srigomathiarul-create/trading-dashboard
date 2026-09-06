@@ -1,9 +1,3 @@
-trading-dashboard/
-├── index.html          (Main Dashboard + Live Charts)
-├── position-size.html  (Position Size Calculator)
-├── brokerage.html      (Brokerage & Tax Calculator)
-└── nav.js              (Shared Navigation Bar)
-
 document.addEventListener("DOMContentLoaded", function () {
     const navHTML = `
     <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center text-white">

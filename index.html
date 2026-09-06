@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Markets - TradeCalc Hub</title>
+    <title>NSE Markets - TradeCalc Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="nav.js" defer></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
+    <div id="navbar"></div>
 
-    <!-- Top Market Ticker Tape -->
+    <!-- Ticker Tape -->
     <div class="tradingview-widget-container border-b border-gray-800">
         <div class="tradingview-widget-container__widget"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -18,7 +19,8 @@
                 {"proName": "NSE:NIFTY", "title": "NIFTY 50"},
                 {"proName": "NSE:BANKNIFTY", "title": "BANK NIFTY"},
                 {"proName": "BSE:SENSEX", "title": "SENSEX"},
-                {"proName": "FX_IDC:USDINR", "title": "USD/INR"}
+                {"proName": "NSE:RELIANCE", "title": "RELIANCE"},
+                {"proName": "NSE:TCS", "title": "TCS"}
             ],
             "colorTheme": "dark",
             "isTransparent": false,
@@ -28,31 +30,47 @@
         </script>
     </div>
 
-    <!-- Main Live Chart Section -->
-    <main class="p-6">
-        <h1 class="text-2xl font-bold mb-4 text-blue-400">Live Technical Analysis</h1>
-        <div class="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px]">
-            <div class="tradingview-widget-container" style="height:100%;width:100%">
+    <main class="p-6 max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE Technical Analysis</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <!-- Scrip Switcher Sidebar -->
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <h2 class="text-lg font-semibold mb-3 text-gray-300">Popular Scrips</h2>
+                <div class="space-y-2">
+                    <button onclick="loadChart('NSE:NIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">NIFTY 50</button>
+                    <button onclick="loadChart('NSE:BANKNIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">BANK NIFTY</button>
+                    <button onclick="loadChart('NSE:RELIANCE')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">RELIANCE</button>
+                    <button onclick="loadChart('NSE:TCS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">TCS</button>
+                    <button onclick="loadChart('NSE:INFY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">INFOSYS</button>
+                </div>
+            </div>
+
+            <!-- Main Interactive Chart -->
+            <div class="lg:col-span-3 bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]">
                 <div id="tradingview_chart" style="height:100%;width:100%"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                    new TradingView.widget({
-                        "autosize": true,
-                        "symbol": "NSE:NIFTY",
-                        "interval": "D",
-                        "timezone": "Asia/Kolkata",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false,
-                        "allow_symbol_change": true,
-                        "container_id": "tradingview_chart"
-                    });
-                </script>
             </div>
         </div>
     </main>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        function loadChart(symbolName) {
+            document.getElementById("tradingview_chart").innerHTML = "";
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbolName,
+                "interval": "D",
+                "timezone": "Asia/Kolkata",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+            });
+        }
+        loadChart('NSE:NIFTY');
+    </script>
 </body>
 </html>

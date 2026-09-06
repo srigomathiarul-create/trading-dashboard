@@ -1,15 +1,68 @@
-<div class="space-y-1">
-    <button onclick="loadChart('OANDA:XAUUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">XAUSD GOLD</button>
-    <button onclick="loadChart('BINANCE:BTCUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">BTCUSD</button>
-    <button onclick="loadChart('OANDA:XAGUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">XNGUSD SILVER</button>
-    <button onclick="loadChart('TVC:USOIL')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">XTI CRUDE</button>
-    <button onclick="loadChart('TVC:NATGAS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">XNGUSD N.GAS</button>
-    <button onclick="loadChart('FX:USDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">USD JPY</button>
-    <button onclick="loadChart('FX:AUDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">AUD JPY</button>
-    <button onclick="loadChart('FX:GBPJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">GBP JPY</button>
-    <button onclick="loadChart('FX:EURJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">EUR JPY</button>
-    <button onclick="loadChart('FX:NZDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">NZD JPY</button>
-    <button onclick="loadChart('FX:CADJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">CAD JPY</button>
-    <button onclick="loadChart('FX:CHFJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">CHF JPY</button>
-    <button onclick="loadChart('BINANCE:ETHUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded">ETH USD</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forex Technical Analysis - TradeCalc Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="nav.js" defer></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div id="navbar"></div>
+
+    <main class="p-6 max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4 text-purple-400">Forex Technical Analysis</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <!-- Scrip List Sidebar -->
+            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <h2 class="text-lg font-semibold mb-3 text-gray-300">SCRIP NAME</h2>
+                <div class="space-y-1.5 max-h-[580px] overflow-y-auto pr-1">
+                    <button onclick="loadChart('OANDA:XAUUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XAUSD GOLD</button>
+                    <button onclick="loadChart('BINANCE:BTCUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">BTCUSD</button>
+                    <button onclick="loadChart('OANDA:XAGUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XNGUSD SILVER</button>
+                    <button onclick="loadChart('TVC:USOIL')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XTI CRUDE</button>
+                    <button onclick="loadChart('TVC:NATGAS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XNGUSD N.GAS</button>
+                    <button onclick="loadChart('FX:USDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">USD JPY</button>
+                    <button onclick="loadChart('FX:AUDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">AUD JPY</button>
+                    <button onclick="loadChart('FX:GBPJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">GBP JPY</button>
+                    <button onclick="loadChart('FX:EURJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">EUR JPY</button>
+                    <button onclick="loadChart('FX:NZDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">NZD JPY</button>
+                    <button onclick="loadChart('FX:CADJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">CAD JPY</button>
+                    <button onclick="loadChart('FX:CHFJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">CHF JPY</button>
+                    <button onclick="loadChart('BINANCE:ETHUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">ETH USD</button>
+                </div>
+            </div>
+
+            <!-- Chart Display -->
+            <div class="lg:col-span-3 bg-gray-800 p-4 rounded-lg border border-gray-700 h-[620px]">
+                <div id="tradingview_chart" class="w-full h-full"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TradingView Embed Widget JS -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        function loadChart(symbolName) {
+            document.getElementById("tradingview_chart").innerHTML = "";
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbolName,
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+            });
+        }
+
+        window.addEventListener('load', function() {
+            loadChart('OANDA:XAUUSD');
+        });
+    </script>
+</body>
+</html>

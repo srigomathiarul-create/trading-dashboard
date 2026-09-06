@@ -49,9 +49,8 @@
             </div>
 
             <div class="overflow-x-auto">
-                <!-- Font size set to 18px -->
-                <table class="w-full text-left text-[18px]">
-                    <thead class="bg-gray-700 text-gray-200 uppercase text-[16px]">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-700 text-gray-200 uppercase text-[18px]">
                         <tr>
                             <th class="p-4">SNAME</th>
                             <th class="p-4">LOT</th>
@@ -67,31 +66,35 @@
         </div>
 
         <!-- Embedded Chart Container -->
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]">
-            <iframe id="tradingview_iframe" class="w-full h-full border-0" src=""></iframe>
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[600px]" id="chart-container">
+            <div id="tradingview_chart" class="w-full h-full"></div>
         </div>
     </main>
 
+    <!-- Official TradingView Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    
     <script type="text/javascript">
+        // Using Futures (1!) for Indices and BSE for stocks to bypass embed blocks
         const nseScrips = {
-            "NIFTY 50": { symbol: "NSE:NIFTYBEES", cmp: 24500.00, lot: 50, stepPct: 0.005 },
-            "BANK NIFTY": { symbol: "NSE:BANKBEES", cmp: 51200.00, lot: 15, stepPct: 0.005 },
-            "FIN NIFTY": { symbol: "NSE:FINNIFTYBEES", cmp: 23100.00, lot: 40, stepPct: 0.005 },
-            "RELIANCE": { symbol: "NSE:RELIANCE", cmp: 2950.00, lot: 250, stepPct: 0.008 },
-            "TCS": { symbol: "NSE:TCS", cmp: 4150.00, lot: 175, stepPct: 0.008 },
-            "INFOSYS": { symbol: "NSE:INFY", cmp: 1820.00, lot: 400, stepPct: 0.008 },
-            "HDFC BANK": { symbol: "NSE:HDFCBANK", cmp: 1640.00, lot: 550, stepPct: 0.008 },
-            "ICICI BANK": { symbol: "NSE:ICICIBANK", cmp: 1210.00, lot: 700, stepPct: 0.008 },
-            "SBIN": { symbol: "NSE:SBIN", cmp: 820.00, lot: 1500, stepPct: 0.008 },
-            "TATA MOTORS": { symbol: "NSE:TATAMOTORS", cmp: 980.00, lot: 1000, stepPct: 0.01 },
-            "AXIS BANK": { symbol: "NSE:AXISBANK", cmp: 1180.00, lot: 625, stepPct: 0.008 },
-            "LT": { symbol: "NSE:LT", cmp: 3600.00, lot: 150, stepPct: 0.008 },
-            "BHARTI AIRTEL": { symbol: "NSE:BHARTIARTL", cmp: 1450.00, lot: 475, stepPct: 0.008 },
-            "WIPRO": { symbol: "NSE:WIPRO", cmp: 520.00, lot: 1500, stepPct: 0.01 },
-            "ITC": { symbol: "NSE:ITC", cmp: 490.00, lot: 1600, stepPct: 0.008 },
-            "MARUTI": { symbol: "NSE:MARUTI", cmp: 12300.00, lot: 100, stepPct: 0.008 },
-            "ADANI PORTS": { symbol: "NSE:ADANIPORTS", cmp: 1350.00, lot: 625, stepPct: 0.01 },
-            "BAJAJ FINANCE": { symbol: "NSE:BAJFINANCE", cmp: 6900.00, lot: 125, stepPct: 0.01 }
+            "NIFTY 50": { symbol: "NSE:NIFTY1!", cmp: 24500.00, lot: 50, stepPct: 0.005 },
+            "BANK NIFTY": { symbol: "NSE:BANKNIFTY1!", cmp: 51200.00, lot: 15, stepPct: 0.005 },
+            "FIN NIFTY": { symbol: "NSE:FINNIFTY1!", cmp: 23100.00, lot: 40, stepPct: 0.005 },
+            "RELIANCE": { symbol: "BSE:RELIANCE", cmp: 2950.00, lot: 250, stepPct: 0.008 },
+            "TCS": { symbol: "BSE:TCS", cmp: 4150.00, lot: 175, stepPct: 0.008 },
+            "INFOSYS": { symbol: "BSE:INFY", cmp: 1820.00, lot: 400, stepPct: 0.008 },
+            "HDFC BANK": { symbol: "BSE:HDFCBANK", cmp: 1640.00, lot: 550, stepPct: 0.008 },
+            "ICICI BANK": { symbol: "BSE:ICICIBANK", cmp: 1210.00, lot: 700, stepPct: 0.008 },
+            "SBIN": { symbol: "BSE:SBIN", cmp: 820.00, lot: 1500, stepPct: 0.008 },
+            "TATA MOTORS": { symbol: "BSE:TATAMOTORS", cmp: 980.00, lot: 1000, stepPct: 0.01 },
+            "AXIS BANK": { symbol: "BSE:AXISBANK", cmp: 1180.00, lot: 625, stepPct: 0.008 },
+            "LT": { symbol: "BSE:LT", cmp: 3600.00, lot: 150, stepPct: 0.008 },
+            "BHARTI AIRTEL": { symbol: "BSE:BHARTIARTL", cmp: 1450.00, lot: 475, stepPct: 0.008 },
+            "WIPRO": { symbol: "BSE:WIPRO", cmp: 520.00, lot: 1500, stepPct: 0.01 },
+            "ITC": { symbol: "BSE:ITC", cmp: 490.00, lot: 1600, stepPct: 0.008 },
+            "MARUTI": { symbol: "BSE:MARUTI", cmp: 12300.00, lot: 100, stepPct: 0.008 },
+            "ADANI PORTS": { symbol: "BSE:ADANIPORTS", cmp: 1350.00, lot: 625, stepPct: 0.01 },
+            "BAJAJ FINANCE": { symbol: "BSE:BAJFINANCE", cmp: 6900.00, lot: 125, stepPct: 0.01 }
         };
 
         let currentScrip = "NIFTY 50";
@@ -150,8 +153,9 @@
                 const buyLevel = cmp + (stepValue * i);
                 const sellLevel = cmp - (stepValue * i);
 
+                // Table Rows locked to 18px size
                 const row = `
-                    <tr class="hover:bg-gray-800">
+                    <tr class="hover:bg-gray-800 text-[18px]">
                         <td class="p-4 font-bold text-blue-400">${currentScrip}</td>
                         <td class="p-4">${lot.toLocaleString('en-IN')}</td>
                         <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
@@ -165,9 +169,22 @@
         }
 
         function loadChart(symbolName) {
-            const formattedSymbol = encodeURIComponent(symbolName);
-            const iframe = document.getElementById("tradingview_iframe");
-            iframe.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${formattedSymbol}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FKolkata`;
+            // Hard clear the div before loading to prevent script bugs
+            const chartContainer = document.getElementById("chart-container");
+            chartContainer.innerHTML = '<div id="tradingview_chart" class="w-full h-full"></div>';
+            
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbolName,
+                "interval": "15",
+                "timezone": "Asia/Kolkata",
+                "theme": "dark",
+                "style": "1",
+                "locale": "in",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+            });
         }
 
         window.addEventListener("DOMContentLoaded", () => {

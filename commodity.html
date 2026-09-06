@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commodity Level Calculator - TradeCalc Hub</title>
+    <title>MCX Commodity Range Calculator - TradeCalc Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen relative pb-12">
@@ -104,29 +104,27 @@
     <script type="text/javascript">
         let currentScrip = "GOLD";
 
-        // Complete MCX Commodity List (Fixed missing lot sizes & syntax errors)
         const commodityScrips = {
-            "GOLD": { cmp: 72500.00, lot: 100, stepPct: 0.000237 },
-            "GOLD MINI": { cmp: 72500.00, lot: 10, stepPct: 0.00025 },
-            "GOLD GUINEA": { cmp: 58000.00, lot: 8, stepPct: 0.00025 },
-            "GOLD TEN": { cmp: 72500.00, lot: 10, stepPct: 0.00025 },
-            "GOLD PETAL": { cmp: 7250.00, lot: 1, stepPct: 0.0003 },
-            "SILVER": { cmp: 85000.00, lot: 30, stepPct: 0.0004 },
-            "SILVER MINI": { cmp: 85000.00, lot: 5, stepPct: 0.0004 },
-            "SILVER MICRO": { cmp: 85000.00, lot: 1, stepPct: 0.0004 },
-            "CRUDE OIL": { cmp: 6200.00, lot: 100, stepPct: 0.001 },
-            "CRUDE MINI": { cmp: 6200.00, lot: 10, stepPct: 0.001 },
-            "NATURAL GAS": { cmp: 185.00, lot: 1250, stepPct: 0.003 },
-            "NATURAL GAS MIN": { cmp: 185.00, lot: 250, stepPct: 0.003 },
-            "COPPER": { cmp: 810.00, lot: 2500, stepPct: 0.0015 },
-            "ZINC": { cmp: 260.00, lot: 5000, stepPct: 0.002 },
-            "ZINC MINI": { cmp: 260.00, lot: 1000, stepPct: 0.002 },
-            "ALUMINUM": { cmp: 235.00, lot: 5000, stepPct: 0.002 },
-            "ALUMINUM MINI": { cmp: 235.00, lot: 1000, stepPct: 0.002 },
-            "LEAD": { cmp: 180.00, lot: 5000, stepPct: 0.002 },
-            "LEAD MINI": { cmp: 180.00, lot: 1000, stepPct: 0.002 },
-            "NICKEL": { cmp: 1450.00, lot: 1500, stepPct: 0.002 },
-            "MCX BULLDEX": { cmp: 18000.00, lot: 50, stepPct: 0.0005 }
+            "GOLD": { cmp: 72500.00, lot: 100, stepPct: 0.005 },
+            "GOLD MINI": { cmp: 72500.00, lot: 10, stepPct: 0.005 },
+            "GOLD GUINEA": { cmp: 58000.00, lot: 8, stepPct: 0.005 },
+            "GOLD TEN": { cmp: 72500.00, lot: 10, stepPct: 0.005 },
+            "GOLD PETAL": { cmp: 7250.00, lot: 1, stepPct: 0.005 },
+            "SILVER": { cmp: 85000.00, lot: 30, stepPct: 0.008 },
+            "SILVER MINI": { cmp: 85000.00, lot: 5, stepPct: 0.008 },
+            "SILVER MICRO": { cmp: 85000.00, lot: 1, stepPct: 0.008 },
+            "CRUDE OIL": { cmp: 6200.00, lot: 100, stepPct: 0.01 },
+            "CRUDE MINI": { cmp: 6200.00, lot: 10, stepPct: 0.01 },
+            "NATURAL GAS": { cmp: 185.00, lot: 1250, stepPct: 0.015 },
+            "NATURAL GAS MIN": { cmp: 185.00, lot: 250, stepPct: 0.015 },
+            "COPPER": { cmp: 810.00, lot: 2500, stepPct: 0.008 },
+            "ZINC": { cmp: 260.00, lot: 5000, stepPct: 0.01 },
+            "ZINC MINI": { cmp: 260.00, lot: 1000, stepPct: 0.01 },
+            "ALUMINUM": { cmp: 235.00, lot: 5000, stepPct: 0.01 },
+            "ALUMINUM MINI": { cmp: 235.00, lot: 1000, stepPct: 0.01 },
+            "LEAD": { cmp: 180.00, lot: 5000, stepPct: 0.01 },
+            "LEAD MINI": { cmp: 180.00, lot: 1000, stepPct: 0.01 },
+            "MCX BULLDEX": { cmp: 18000.00, lot: 50, stepPct: 0.005 }
         };
 
         window.onload = function() {
@@ -147,6 +145,7 @@
         }
 
         function selectScrip(name) {
+            if (!commodityScrips[name]) return;
             currentScrip = name;
             document.getElementById("header-title").innerText = name;
             const item = commodityScrips[name];
@@ -166,17 +165,27 @@
         }
 
         function calculateLevels() {
-            const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
-            const lot = parseFloat(document.getElementById("lot-input").value) || 0;
-            const stepPct = commodityScrips[currentScrip]?.stepPct || 0.000237;
-            const stepValue = cmp * stepPct;
-            const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
+            const cmpInput = document.getElementById("cmp-input").value;
+            const lotInput = document.getElementById("lot-input").value;
+            const cmp = parseFloat(cmpInput) || 0;
+            const lot = parseFloat(lotInput) || 0;
 
-            document.getElementById("total-up").innerText = (cmp + (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-            document.getElementById("total-down").innerText = (cmp - (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+            const scripConfig = commodityScrips[currentScrip] || { stepPct: 0.005 };
+            const stepValue = cmp * scripConfig.stepPct;
+
+            const activeRadio = document.querySelector('input[name="range"]:checked');
+            const selectedRange = activeRadio ? parseInt(activeRadio.value) : 5;
+
+            const totalUp = cmp + (stepValue * selectedRange);
+            const totalDown = cmp - (stepValue * selectedRange);
+
+            document.getElementById("total-up").innerText = totalUp.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById("total-down").innerText = totalDown.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             const tbody = document.getElementById("levels-table");
             tbody.innerHTML = "";
+
+            if (cmp === 0) return;
 
             for (let i = 1; i <= selectedRange; i++) {
                 const upLevel = cmp + (stepValue * i);
@@ -189,10 +198,10 @@
                         <td class="p-4">${lot.toLocaleString('en-IN')}</td>
                         <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                         <td class="p-4 text-gray-300">${levelName}</td>
-                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</td>
-                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</td>
+                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td class="p-4 text-center">
-                            <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', ${upLevel.toFixed(2)}, ${downLevel.toFixed(2)})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
+                            <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', '${upLevel.toFixed(2)}', '${downLevel.toFixed(2)}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
                                 💬 WhatsApp
                             </button>
                         </td>

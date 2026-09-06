@@ -34,15 +34,15 @@
         <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE Technical Analysis</h1>
         
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <!-- Scrip Switcher Sidebar -->
+            <!-- Quick Scrip Switcher Sidebar -->
             <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                 <h2 class="text-lg font-semibold mb-3 text-gray-300">Popular Scrips</h2>
                 <div class="space-y-2">
-                    <button onclick="loadChart('NSE:NIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">NIFTY 50</button>
-                    <button onclick="loadChart('NSE:BANKNIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">BANK NIFTY</button>
-                    <button onclick="loadChart('NSE:RELIANCE')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">RELIANCE</button>
-                    <button onclick="loadChart('NSE:TCS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">TCS</button>
-                    <button onclick="loadChart('NSE:INFY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded">INFOSYS</button>
+                    <button onclick="loadChart('NSE:NIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">NIFTY 50</button>
+                    <button onclick="loadChart('NSE:BANKNIFTY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">BANK NIFTY</button>
+                    <button onclick="loadChart('NSE:RELIANCE')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">RELIANCE</button>
+                    <button onclick="loadChart('NSE:TCS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">TCS</button>
+                    <button onclick="loadChart('NSE:INFY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">INFOSYS</button>
                 </div>
             </div>
 
@@ -53,24 +53,31 @@
         </div>
     </main>
 
+    <!-- TradingView Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
         function loadChart(symbolName) {
             document.getElementById("tradingview_chart").innerHTML = "";
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": symbolName,
-                "interval": "D",
-                "timezone": "Asia/Kolkata",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_chart"
-            });
+            if (typeof TradingView !== "undefined") {
+                new TradingView.widget({
+                    "autosize": true,
+                    "symbol": symbolName,
+                    "interval": "D",
+                    "timezone": "Asia/Kolkata",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "enable_publishing": false,
+                    "allow_symbol_change": true,
+                    "container_id": "tradingview_chart"
+                });
+            }
         }
-        loadChart('NSE:NIFTY');
+
+        // Initialize with NIFTY 50 once window loads
+        window.onload = function() {
+            loadChart('NSE:NIFTY');
+        };
     </script>
 </body>
 </html>

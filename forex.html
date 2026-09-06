@@ -13,31 +13,26 @@
     <main class="p-6 max-w-7xl mx-auto">
         <h1 class="text-2xl font-bold mb-4 text-purple-400">Forex Technical Analysis</h1>
         
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <!-- Scrip List Sidebar -->
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h2 class="text-lg font-semibold mb-3 text-gray-300">SCRIP NAME</h2>
-                <div class="space-y-1.5 max-h-[580px] overflow-y-auto pr-1">
-                    <button onclick="loadChart('OANDA:XAUUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XAUSD GOLD</button>
-                    <button onclick="loadChart('BINANCE:BTCUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">BTCUSD</button>
-                    <button onclick="loadChart('OANDA:XAGUSD')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XNGUSD SILVER</button>
-                    <button onclick="loadChart('TVC:USOIL')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XTI CRUDE</button>
-                    <button onclick="loadChart('TVC:NATGAS')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">XNGUSD N.GAS</button>
-                    <button onclick="loadChart('FX:USDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">USD JPY</button>
-                    <button onclick="loadChart('FX:AUDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">AUD JPY</button>
-                    <button onclick="loadChart('FX:GBPJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">GBP JPY</button>
-                    <button onclick="loadChart('FX:EURJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">EUR JPY</button>
-                    <button onclick="loadChart('FX:NZDJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">NZD JPY</button>
-                    <button onclick="loadChart('FX:CADJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">CAD JPY</button>
-                    <button onclick="loadChart('FX:CHFJPY')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">CHF JPY</button>
-                    <button onclick="loadChart('BINANCE:ETHUSDT')" class="w-full text-left px-3 py-2 bg-gray-700 hover:bg-purple-600 rounded transition font-medium">ETH USD</button>
-                </div>
-            </div>
+        <!-- Horizontal Selector Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <button onclick="loadChart('OANDA:XAUUSD')" class="scrip-btn px-3 py-1.5 bg-purple-600 text-white rounded text-sm font-semibold transition">XAUSD GOLD</button>
+            <button onclick="loadChart('BINANCE:BTCUSDT')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">BTCUSD</button>
+            <button onclick="loadChart('OANDA:XAGUSD')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">XNGUSD SILVER</button>
+            <button onclick="loadChart('TVC:USOIL')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">XTI CRUDE</button>
+            <button onclick="loadChart('CAPITALCOM:NATURALGAS')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">XNGUSD N.GAS</button>
+            <button onclick="loadChart('FX:USDJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">USD JPY</button>
+            <button onclick="loadChart('FX:AUDJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">AUD JPY</button>
+            <button onclick="loadChart('FX:GBPJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">GBP JPY</button>
+            <button onclick="loadChart('FX:EURJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">EUR JPY</button>
+            <button onclick="loadChart('FX:NZDJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">NZD JPY</button>
+            <button onclick="loadChart('FX:CADJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">CAD JPY</button>
+            <button onclick="loadChart('FX:CHFJPY')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">CHF JPY</button>
+            <button onclick="loadChart('BINANCE:ETHUSDT')" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-purple-600 rounded text-sm font-semibold transition">ETH USD</button>
+        </div>
 
-            <!-- Chart Display -->
-            <div class="lg:col-span-3 bg-gray-800 p-4 rounded-lg border border-gray-700 h-[620px]">
-                <div id="tradingview_chart" class="w-full h-full"></div>
-            </div>
+        <!-- TradingView Container -->
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[620px]">
+            <div id="tradingview_chart" class="w-full h-full"></div>
         </div>
     </main>
 
@@ -57,6 +52,18 @@
                 "enable_publishing": false,
                 "allow_symbol_change": true,
                 "container_id": "tradingview_chart"
+            });
+
+            // Highlight active button
+            const buttons = document.querySelectorAll('.scrip-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(symbolName)) {
+                    btn.classList.add('bg-purple-600', 'text-white');
+                    btn.classList.remove('bg-gray-700');
+                } else {
+                    btn.classList.remove('bg-purple-600', 'text-white');
+                    btn.classList.add('bg-gray-700');
+                }
             });
         }
 

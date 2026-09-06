@@ -8,25 +8,10 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen relative pb-12">
 
-    <div id="login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-gray-800 border border-amber-500/30 p-8 rounded-xl max-w-md w-full shadow-2xl text-center">
-            <h2 class="text-3xl font-black text-amber-400 mb-2">NSE TradeCalc Hub</h2>
-            <p class="text-gray-300 text-sm mb-6">Enter your mobile number to unlock access.</p>
-            
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <input type="tel" id="user-mobile" pattern="[0-9]{10}" placeholder="Enter 10-Digit Mobile Number" required 
-                           class="w-full bg-gray-900 border border-gray-700 text-white p-3 rounded font-bold text-center text-lg focus:outline-none focus:border-amber-500">
-                </div>
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-black py-3 rounded text-lg transition">
-                    ENTER SITE
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="main-content" class="hidden">
+    <!-- MAIN NSE CONTENT -->
+    <div id="main-content">
         
+        <!-- Live TradingView NSE Ticker Tape -->
         <div class="tradingview-widget-container mb-4">
             <div class="tradingview-widget-container__widget"></div>
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -54,8 +39,10 @@
         <main class="p-6 max-w-7xl mx-auto">
             <h1 class="text-2xl font-bold mb-4 text-amber-400">NSE Market Range Calculator</h1>
 
+            <!-- Scrip Buttons Grid -->
             <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700 max-h-52 overflow-y-auto" id="nse-buttons"></div>
 
+            <!-- Calculator Header -->
             <div class="bg-amber-500 text-gray-900 p-6 rounded-t-lg shadow-md border-b-2 border-amber-600">
                 <h1 id="header-title" class="text-4xl font-black text-center tracking-wider uppercase mb-6 text-black">NIFTY 50</h1>
                 
@@ -70,6 +57,7 @@
                     </div>
                 </div>
 
+                <!-- Range Selectors -->
                 <div class="flex flex-wrap justify-center gap-6 mt-6 text-xs font-black text-black">
                     <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="1" onchange="calculateLevels()"> <span>RANGE A</span></label>
                     <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="2" onchange="calculateLevels()"> <span>RANGE B</span></label>
@@ -79,6 +67,7 @@
                 </div>
             </div>
 
+            <!-- Output Table -->
             <div class="bg-gray-800 p-6 rounded-b-lg border border-gray-700 shadow-xl mb-6">
                 <div class="flex justify-between items-center mb-6 font-bold text-xl border-b border-gray-700 pb-3">
                     <span class="text-emerald-400">TOTAL UP: <span id="total-up">0.00</span></span>
@@ -105,6 +94,7 @@
         </main>
     </div>
 
+    <!-- BOTTOM RUNNING SCROLL TEXT -->
     <div class="fixed bottom-0 left-0 w-full bg-amber-500 text-black py-2 overflow-hidden whitespace-nowrap z-40 border-t border-amber-600 font-black">
         <div class="inline-block animate-marquee uppercase tracking-widest text-sm">
             ⚠️ THIS IS FOR EDUCATIONAL PURPOSE ONLY — HAPPY TRADING &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ⚠️ THIS IS FOR EDUCATIONAL PURPOSE ONLY — HAPPY TRADING &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ⚠️ THIS IS FOR EDUCATIONAL PURPOSE ONLY — HAPPY TRADING
@@ -124,7 +114,6 @@
     </style>
 
     <script type="text/javascript">
-        const adminMobile = "918939494745";
         let currentScrip = "NIFTY 50";
 
         const nseScrips = {
@@ -177,4 +166,98 @@
             "CIPLA": { cmp: 1580.00, lot: 650, stepPct: 0.008 },
             "DR REDDY": { cmp: 6900.00, lot: 125, stepPct: 0.008 },
             "SBILIFE": { cmp: 1820.00, lot: 375, stepPct: 0.008 },
-            "HDFCLIFE": { cmp: 710.00
+            "HDFCLIFE": { cmp: 710.00, lot: 1100, stepPct: 0.008 }
+        };
+
+        window.onload = function() {
+            renderButtons();
+            selectScrip("NIFTY 50");
+        };
+
+        function renderButtons() {
+            const container = document.getElementById("nse-buttons");
+            container.innerHTML = "";
+
+            Object.keys(nseScrips).forEach(name => {
+                const btn = document.createElement("button");
+                btn.className = `scrip-btn px-3.5 py-2 bg-gray-700 hover:bg-amber-500 hover:text-black rounded text-sm font-semibold transition text-gray-200`;
+                btn.innerText = name;
+                btn.onclick = () => selectScrip(name);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectScrip(name) {
+            currentScrip = name;
+            document.getElementById("header-title").innerText = name;
+
+            const item = nseScrips[name];
+            document.getElementById("lot-input").value = item.lot;
+            document.getElementById("cmp-input").value = item.cmp;
+
+            const buttons = document.querySelectorAll(".scrip-btn");
+            buttons.forEach(btn => {
+                if (btn.innerText.trim() === name) {
+                    btn.classList.add("bg-amber-500", "text-black", "font-bold");
+                    btn.classList.remove("bg-gray-700", "text-gray-200");
+                } else {
+                    btn.classList.remove("bg-amber-500", "text-black", "font-bold");
+                    btn.classList.add("bg-gray-700", "text-gray-200");
+                }
+            });
+
+            calculateLevels();
+        }
+
+        function calculateLevels() {
+            const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
+            const lot = parseFloat(document.getElementById("lot-input").value) || 0;
+            const stepPct = nseScrips[currentScrip]?.stepPct || 0.008;
+            const stepValue = cmp * stepPct;
+
+            const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
+
+            document.getElementById("total-up").innerText = (cmp + (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById("total-down").innerText = (cmp - (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+            const tbody = document.getElementById("levels-table");
+            tbody.innerHTML = "";
+
+            for (let i = 1; i <= selectedRange; i++) {
+                const upLevel = cmp + (stepValue * i);
+                const downLevel = cmp - (stepValue * i);
+                const levelName = `L${i} (Range ${String.fromCharCode(64 + i)})`;
+
+                const row = `
+                    <tr class="hover:bg-gray-800 text-[18px]">
+                        <td class="p-4 font-bold text-amber-400">${currentScrip}</td>
+                        <td class="p-4">${lot.toLocaleString('en-IN')}</td>
+                        <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 text-gray-300">${levelName}</td>
+                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', ${upLevel.toFixed(2)}, ${downLevel.toFixed(2)})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
+                                💬 WhatsApp
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            }
+        }
+
+        function shareWhatsApp(scrip, cmp, level, up, down) {
+            const text = `📊 *NSE LEVEL ALERT: ${scrip}*\n\n` +
+                         `📍 *CMP:* ${cmp}\n` +
+                         `🎯 *Target Level:* ${level}\n\n` +
+                         `📈 *UP LEVEL:* ${up}\n` +
+                         `📉 *DOWN LEVEL:* ${down}\n\n` +
+                         `_Shared via TradeCalc Hub (Educational Purpose Only)_`;
+            
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSE Calculator & Technicals - TradeCalc Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="nav.js" defer></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div id="navbar"></div>
+
+    <main class="p-6 max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE Market Analysis & Level Calculator</h1>
+        
+        <!-- Horizontal Selector Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700" id="nse-buttons">
+            <button onclick="loadNseScrip('NSE:NIFTY', 18000, 150, 50)" class="scrip-btn px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-semibold transition">NIFTY 50</button>
+            <button onclick="loadNseScrip('NSE:BANKNIFTY', 42000, 350, 15)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">BANK NIFTY</button>
+            <button onclick="loadNseScrip('NSE:FINNIFTY', 19000, 180, 40)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">FIN NIFTY</button>
+            <button onclick="loadNseScrip('NSE:RELIANCE', 2400, 30, 250)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">RELIANCE</button>
+            <button onclick="loadNseScrip('NSE:TCS', 3300, 45, 175)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">TCS</button>
+            <button onclick="loadNseScrip('NSE:INFY', 1400, 20, 400)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">INFY</button>
+            <button onclick="loadNseScrip('NSE:HDFCBANK', 1600, 25, 550)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">HDFC BANK</button>
+            <button onclick="loadNseScrip('NSE:ICICIBANK', 900, 15, 700)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">ICICI BANK</button>
+            <button onclick="loadNseScrip('NSE:SBIN', 550, 10, 1500)" class="scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-blue-600 rounded text-sm font-semibold transition">SBIN</button>
+        </div>
+
+        <!-- Calculator Inputs Header -->
+        <div class="bg-blue-600 text-white p-6 rounded-t-lg shadow-md border-b-2 border-blue-700">
+            <h1 id="header-title" class="text-3xl font-black text-center tracking-wider uppercase mb-4 text-white">NIFTY 50</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1 text-gray-100">Lot Size</label>
+                    <input type="number" id="lot-input" readonly class="w-full bg-gray-200 text-black p-2.5 rounded font-bold border border-blue-800 focus:outline-none cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1 text-gray-100">Live CMP</label>
+                    <input type="number" id="cmp-input" step="any" oninput="calculateLevels()" class="w-full bg-black text-white p-2.5 rounded font-bold border border-blue-800 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1 text-gray-100">Net Value</label>
+                    <input type="number" id="net-input" step="any" oninput="calculateLevels()" class="w-full bg-black text-white p-2.5 rounded font-bold border border-blue-800 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Range Selectors -->
+            <div class="flex flex-wrap justify-center gap-4 mt-4 text-xs font-bold text-white">
+                <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="1" onchange="calculateLevels()"> <span>RANGE A (1 Level)</span></label>
+                <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="2" onchange="calculateLevels()"> <span>RANGE B (2 Levels)</span></label>
+                <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="3" onchange="calculateLevels()"> <span>RANGE C (3 Levels)</span></label>
+                <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="4" onchange="calculateLevels()"> <span>RANGE D (4 Levels)</span></label>
+                <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="5" checked onchange="calculateLevels()"> <span>RANGE E (5 Levels)</span></label>
+            </div>
+        </div>
+
+        <!-- Output Table Card -->
+        <div class="bg-gray-800 p-6 rounded-b-lg border border-gray-700 shadow-xl mb-6">
+            <div class="flex justify-between items-center mb-6 font-bold text-lg border-b border-gray-700 pb-3">
+                <span class="text-emerald-400">TOTAL UP (CMP + NET): <span id="total-up">0.00</span></span>
+                <span class="text-rose-500">TOTAL DOWN (CMP - NET): <span id="total-down">0.00</span></span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                        <tr>
+                            <th class="p-3">SNAME</th>
+                            <th class="p-3">LOT</th>
+                            <th class="p-3">CMP</th>
+                            <th class="p-3">LEVEL</th>
+                            <th class="p-3 text-emerald-400">BUY LEVEL</th>
+                            <th class="p-3 text-rose-500">SELL LEVEL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="levels-table" class="divide-y divide-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TradingView Embedded Chart -->
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 h-[500px]">
+            <div id="tradingview_chart" class="w-full h-full"></div>
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        let currentSymbol = 'NSE:NIFTY';
+        let currentName = 'NIFTY 50';
+
+        function loadNseScrip(symbol, defaultCmp, defaultNet, defaultLot) {
+            currentSymbol = symbol;
+            currentName = symbol.replace('NSE:', '');
+
+            document.getElementById("header-title").innerText = currentName;
+            document.getElementById("cmp-input").value = defaultCmp;
+            document.getElementById("net-input").value = defaultNet;
+            document.getElementById("lot-input").value = defaultLot;
+
+            // Highlight Active Button
+            const buttons = document.querySelectorAll('.scrip-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(symbol)) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    btn.classList.remove('bg-gray-700');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-gray-700');
+                }
+            });
+
+            calculateLevels();
+            loadChart(symbol);
+        }
+
+        function calculateLevels() {
+            const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
+            const net = parseFloat(document.getElementById("net-input").value) || 0;
+            const lot = parseFloat(document.getElementById("lot-input").value) || 0;
+            const netStep = net / 5;
+
+            const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
+
+            document.getElementById("total-up").innerText = (cmp + net).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById("total-down").innerText = (cmp - net).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+            const tbody = document.getElementById("levels-table");
+            tbody.innerHTML = "";
+
+            for (let i = 1; i <= selectedRange; i++) {
+                const buyLevel = cmp + (netStep * i);
+                const sellLevel = cmp - (netStep * i);
+
+                const row = `
+                    <tr class="hover:bg-gray-800">
+                        <td class="p-3 font-bold text-blue-400">${currentName}</td>
+                        <td class="p-3">${lot.toLocaleString('en-IN')}</td>
+                        <td class="p-3">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-3 text-gray-400">L${i} (Range ${String.fromCharCode(64 + i)})</td>
+                        <td class="p-3 font-bold text-emerald-400">${buyLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-3 font-bold text-rose-500">${sellLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            }
+        }
+
+        function loadChart(symbolName) {
+            document.getElementById("tradingview_chart").innerHTML = "";
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbolName,
+                "interval": "D",
+                "timezone": "Asia/Kolkata",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadNseScrip('NSE:NIFTY', 18000, 150, 50);
+        });
+    </script>
+</body>
+</html>

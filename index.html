@@ -10,7 +10,7 @@
 <body class="bg-gray-900 text-white min-h-screen">
     <div id="navbar"></div>
 
-    <!-- Top Ticker Tape -->
+    <!-- Ticker Tape -->
     <div class="tradingview-widget-container border-b border-gray-800">
         <div class="tradingview-widget-container__widget"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -30,12 +30,11 @@
         </script>
     </div>
 
-    <!-- Main Content -->
     <main class="p-6 max-w-7xl mx-auto">
         <h1 class="text-2xl font-bold mb-4 text-blue-400">NSE Technical Analysis</h1>
         
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <!-- Scrip Switcher -->
+            <!-- Sidebar -->
             <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                 <h2 class="text-lg font-semibold mb-3 text-gray-300">Popular Scrips</h2>
                 <div class="space-y-2">
@@ -54,7 +53,7 @@
         </div>
     </main>
 
-    <!-- TradingView Embed Engine -->
+    <!-- TradingView Embed Code -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
         function loadChart(symbolName) {
@@ -73,8 +72,11 @@
             });
         }
 
-        window.addEventListener('load', function() {
-            loadChart('NSE:NIFTY');
+        // Guarantees chart loads NIFTY 50 on page startup
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                loadChart('NSE:NIFTY');
+            }, 300);
         });
     </script>
 </body>

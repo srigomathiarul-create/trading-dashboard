@@ -5,43 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NSE Market Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; }
+    body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 15px; }
     
     /* Top Ticker Bar */
-    .ticker-container { margin-bottom: 20px; border-radius: 8px; overflow: hidden; }
+    .ticker-bar { margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
 
-    /* Navigation Tabs */
-    .tab-navigation { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center; }
+    /* Navigation Buttons */
+    .tab-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; justify-content: center; }
     .tab-btn {
-      background: #1e293b; color: #94a3b8; border: none; padding: 10px 18px; 
+      background: #1e293b; color: #94a3b8; border: none; padding: 10px 16px; 
       border-radius: 20px; cursor: pointer; font-weight: bold; transition: all 0.2s;
     }
     .tab-btn:hover { background: #334155; color: #fff; }
     .tab-btn.active { background: #007aff; color: #ffffff; }
 
-    /* Tab Content Boxes */
-    .tab-content { display: none; height: 600px; width: 100%; }
-    .tab-content.active { display: block; }
-    iframe { border: 0; border-radius: 8px; width: 100%; height: 100%; }
+    /* Tab Display Boxes */
+    .tab-box { display: none; height: 600px; width: 100%; }
+    .tab-box.active { display: block; }
+    iframe, .tradingview-widget-container { border: 0; border-radius: 8px; width: 100%; height: 100%; }
+
+    /* Position Calculator Layout */
+    .calc-container { background: #1e293b; padding: 25px; border-radius: 8px; max-width: 450px; margin: 0 auto; text-align: left; }
+    .calc-group { margin-bottom: 15px; }
+    .calc-group label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 14px; }
+    .calc-group input { width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 16px; }
+    .calc-btn { width: 100%; background: #007aff; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+    .calc-result { margin-top: 15px; font-size: 18px; font-weight: bold; color: #4ade80; text-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- Top Moving Ticker Tape with Indian Market (NSE) Tickers -->
-  <div class="ticker-container">
+  <!-- Top Moving Live Ticker Tape (Fixed NSE Symbols) -->
+  <div class="ticker-bar">
     <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
-          { "proName": "NSE:NIFTY", "title": "NIFTY 50" },
-          { "proName": "NSE:BANKNIFTY", "title": "BANK NIFTY" },
-          { "proName": "NSE:FINNIFTY", "title": "FIN NIFTY" },
-          { "proName": "NSE:RELIANCE", "title": "RELIANCE" },
-          { "proName": "NSE:HDFCBANK", "title": "HDFC BANK" },
-          { "proName": "NSE:ICICIBANK", "title": "ICICI BANK" },
-          { "proName": "NSE:INFY", "title": "INFOSYS" },
-          { "proName": "NSE:TCS", "title": "TCS" }
+          { "description": "NIFTY 50", "proName": "NSE:NIFTY" },
+          { "description": "BANK NIFTY", "proName": "NSE:BANKNIFTY" },
+          { "description": "FIN NIFTY", "proName": "NSE:FINNIFTY" },
+          { "description": "RELIANCE", "proName": "NSE:RELIANCE" },
+          { "description": "HDFC BANK", "proName": "NSE:HDFCBANK" },
+          { "description": "ICICI BANK", "proName": "NSE:ICICIBANK" },
+          { "description": "INFOSYS", "proName": "NSE:INFY" },
+          { "description": "TCS", "proName": "NSE:TCS" }
         ],
         "showSymbolLogo": true,
         "colorTheme": "dark",
@@ -53,48 +61,77 @@
     </div>
   </div>
 
-  <!-- Dashboard Navigation Tabs -->
-  <div class="tab-navigation">
-    <button class="tab-btn active" onclick="switchTab(event, 'chart')">NSE Chart</button>
-    <button class="tab-btn" onclick="switchTab(event, 'signals')">Technical Analysis</button>
-    <button class="tab-btn" onclick="switchTab(event, 'overview')">NSE Overview</button>
-    <button class="tab-btn" onclick="switchTab(event, 'calendar')">Economic Calendar</button>
-    <button class="tab-btn" onclick="switchTab(event, 'news')">Market News</button>
+  <!-- Navigation Tabs -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab(event, 'chartTab')">NSE Chart</button>
+    <button class="tab-btn" onclick="showTab(event, 'scripsTab')">Live Scrips</button>
+    <button class="tab-btn" onclick="showTab(event, 'calcTab')">Calculator</button>
+    <button class="tab-btn" onclick="showTab(event, 'analysisTab')">Technical Analysis</button>
   </div>
 
-  <!-- Tab 1: Live Interactive NSE Chart -->
-  <div id="chart" class="tab-content active">
-    <iframe src="https://s.tradingview.com/widgetembed/?symbol=NSE%3ANIFTY&interval=D&theme=dark"></iframe>
+  <!-- Tab 1: Live Interactive Chart Defaulted to NSE NIFTY -->
+  <div id="chartTab" class="tab-box active">
+    <iframe src="https://s.tradingview.com/widgetembed/?symbol=NSE%3ANIFTY&interval=D&theme=dark&style=1&timezone=Asia%2FKolkata&locale=in"></iframe>
   </div>
 
-  <!-- Tab 2: Technical Signals & Analysis -->
-  <div id="signals" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?theme=dark&symbol=NSE%3ANIFTY"></iframe>
+  <!-- Tab 2: Live Prices for Top NSE Scrips & Indices -->
+  <div id="scripsTab" class="tab-box">
+    <iframe src="https://s.tradingview.com/embed-widget/market-quotes/?theme=dark&locale=in&symbols=NSE%3ANIFTY%2CNSE%3ABANKNIFTY%2CNSE%3AFINNIFTY%2CNSE%3ARELIANCE%2CNSE%3AHDFCBANK%2CNSE%3AICICIBANK%2CNSE%3AINFY%2CNSE%3ATCS"></iframe>
   </div>
 
-  <!-- Tab 3: NSE Market Overview -->
-  <div id="overview" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/market-overview/?theme=dark"></iframe>
+  <!-- Tab 3: Position & Risk Calculator -->
+  <div id="calcTab" class="tab-box">
+    <div class="calc-container">
+      <h3 style="margin-top:0; text-align:center;">NSE Position Calculator</h3>
+      <div class="calc-group">
+        <label>Total Capital (₹)</label>
+        <input type="number" id="capital" value="100000">
+      </div>
+      <div class="calc-group">
+        <label>Risk Per Trade (%)</label>
+        <input type="number" id="risk" value="1">
+      </div>
+      <div class="calc-group">
+        <label>Entry Price (₹)</label>
+        <input type="number" id="entry" value="24000">
+      </div>
+      <div class="calc-group">
+        <label>Stop Loss (₹)</label>
+        <input type="number" id="stoploss" value="23950">
+      </div>
+      <button class="calc-btn" onclick="calculatePosition()">Calculate Quantity</button>
+      <div id="calcOutput" class="calc-result">Quantity: 0 shares</div>
+    </div>
   </div>
 
-  <!-- Tab 4: Economic Calendar -->
-  <div id="calendar" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/events/?theme=dark"></iframe>
+  <!-- Tab 4: Technical Analysis for NIFTY -->
+  <div id="analysisTab" class="tab-box">
+    <iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?theme=dark&locale=in&symbol=NSE%3ANIFTY"></iframe>
   </div>
 
-  <!-- Tab 5: Market News Feed -->
-  <div id="news" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/timeline/?theme=dark"></iframe>
-  </div>
-
-  <!-- JavaScript to Handle Tab Switching -->
   <script>
-    function switchTab(event, tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      
+    function showTab(e, tabId) {
+      document.querySelectorAll('.tab-box').forEach(box => box.classList.remove('active'));
+      document.querySelectorAll('.tab-nav .tab-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      e.currentTarget.classList.add('active');
+    }
+
+    function calculatePosition() {
+      let capital = parseFloat(document.getElementById('capital').value);
+      let riskPercent = parseFloat(document.getElementById('risk').value);
+      let entry = parseFloat(document.getElementById('entry').value);
+      let stoploss = parseFloat(document.getElementById('stoploss').value);
+
+      let maxRisk = capital * (riskPercent / 100);
+      let riskPerShare = Math.abs(entry - stoploss);
+
+      if (riskPerShare > 0) {
+        let quantity = Math.floor(maxRisk / riskPerShare);
+        document.getElementById('calcOutput').innerText = "Max Quantity: " + quantity + " Shares (Risk: ₹" + maxRisk.toFixed(2) + ")";
+      } else {
+        document.getElementById('calcOutput').innerText = "Invalid Entry or Stop Loss";
+      }
     }
   </script>
 

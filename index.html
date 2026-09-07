@@ -3,91 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSE Market Range Calculator</title>
+  <title>TradeCalc Hub - Market Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen">
 
-  <!-- Shared Navigation Bar -->
-  <div id="navbar"></div>
+  <!-- Top Navigation Header -->
+  <nav class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center text-white">
+    <span class="font-bold text-xl text-blue-400">TradeCalc Hub</span>
+    <div class="flex space-x-3 text-sm font-medium">
+      <button onclick="switchMarket('nse')" id="tab-nse" class="px-3 py-1.5 rounded font-bold bg-blue-600 text-white">NSE Stocks</button>
+      <button onclick="switchMarket('mcx')" id="tab-mcx" class="px-3 py-1.5 rounded font-bold bg-slate-700 text-slate-300 hover:bg-slate-600">Commodity</button>
+      <button onclick="switchMarket('forex')" id="tab-forex" class="px-3 py-1.5 rounded font-bold bg-slate-700 text-slate-300 hover:bg-slate-600">Forex</button>
+    </div>
+  </nav>
 
-  <div class="max-w-5xl mx-auto p-6 mt-6">
-    <div class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
-      <h1 class="text-2xl font-bold text-blue-400 text-center uppercase mb-6">NSE Market Range Calculator</h1>
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto p-4 md:p-6">
+    <div class="bg-slate-800 rounded-xl p-4 md:p-6 shadow-2xl border border-slate-700">
+      
+      <!-- Market Title -->
+      <h1 id="market-title" class="text-2xl font-black text-blue-400 text-center uppercase mb-6 tracking-wide">NSE Market Range Calculator</h1>
 
-      <!-- NSE Tickers / Buttons -->
-      <div id="nse-buttons" class="flex flex-wrap gap-2 justify-center bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700 max-h-48 overflow-y-auto"></div>
+      <!-- Buttons Grid for Tickers -->
+      <div id="ticker-buttons" class="flex flex-wrap gap-2 justify-center bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700 max-h-48 overflow-y-auto"></div>
 
-      <!-- Main Display Card -->
-      <div class="bg-amber-500 text-black p-6 rounded-t-xl text-center">
+      <!-- Display Card -->
+      <div id="header-card" class="bg-blue-600 text-black p-6 rounded-t-xl text-center transition-all duration-300">
         <h2 id="selected-name" class="text-3xl font-black mb-3">NIFTY 50</h2>
-        <div class="flex justify-center gap-6">
-          <div class="bg-slate-100 px-6 py-2 rounded text-black font-bold">LOT SIZE: <span id="lot-size">50</span></div>
-          <div class="bg-black text-white px-6 py-2 rounded font-bold">LIVE CMP: <span id="cmp-val">24,500.00</span></div>
+        <div class="flex flex-wrap justify-center gap-4 text-sm md:text-base">
+          <div class="bg-slate-100 px-6 py-2 rounded text-black font-bold shadow">LOT SIZE: <span id="lot-size">50</span></div>
+          <div class="bg-black text-white px-6 py-2 rounded font-bold shadow">LIVE CMP: <span id="cmp-val">24,500.00</span></div>
         </div>
       </div>
 
-      <!-- Output Table -->
-      <div class="overflow-x-auto bg-slate-800 rounded-b-xl p-4 border-t border-slate-700">
-        <table class="w-full text-left">
+      <!-- Levels Output Table -->
+      <div class="overflow-x-auto bg-slate-800 rounded-b-xl p-2 md:p-4 border-t border-slate-700">
+        <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-slate-900 text-slate-400 text-sm">
-              <th class="p-3">SNAME</th>
+            <tr class="bg-slate-900 text-slate-400 text-xs md:text-sm uppercase tracking-wider">
+              <th class="p-3">SYMBOL</th>
               <th class="p-3">LOT</th>
               <th class="p-3">CMP</th>
-              <th class="p-3">LEVEL</th>
-              <th class="p-3">UP LEVEL</th>
-              <th class="p-3">DOWN LEVEL</th>
-              <th class="p-3">ACTION</th>
+              <th class="p-3">RANGE</th>
+              <th class="p-3 text-emerald-400">UP LEVEL</th>
+              <th class="p-3 text-rose-500">DOWN LEVEL</th>
+              <th class="p-3 text-center">ACTION</th>
             </tr>
           </thead>
-          <tbody id="levels-table-body"></tbody>
+          <tbody id="levels-table-body" class="divide-y divide-slate-700 text-sm"></tbody>
         </table>
       </div>
+
     </div>
   </div>
 
-  <script src="nav.js"></script>
   <script>
-    const nseData = [
-      { name: "NIFTY 50", cmp: 24500.00, net: 122.50, lot: 50 },
-      { name: "BANK NIFTY", cmp: 52200.00, net: 261.00, lot: 15 },
-      { name: "FIN NIFTY", cmp: 23100.00, net: 115.50, lot: 25 },
-      { name: "MIDCP NIFTY", cmp: 13000.00, net: 65.00, lot: 50 },
-      { name: "RELIANCE", cmp: 2950.00, net: 22.10, lot: 250 },
-      { name: "TCS", cmp: 4200.00, net: 31.50, lot: 175 },
-      { name: "HDFC BANK", cmp: 1650.00, net: 12.30, lot: 550 },
-      { name: "INFOSYS", cmp: 1820.00, net: 13.60, lot: 400 },
-      { name: "ICICI BANK", cmp: 1210.00, net: 9.00, lot: 700 },
-      { name: "BHARTI AIRTEL", cmp: 1450.00, net: 10.80, lot: 475 },
-      { name: "SBIN", cmp: 810.00, net: 6.00, lot: 750 },
-      { name: "TATA MOTORS", cmp: 1080.00, net: 8.10, lot: 550 }
-    ];
+    // Market Datasets
+    const marketData = {
+      nse: [
+        { name: "NIFTY 50", cmp: 24500.00, net: 122.50, lot: 50 },
+        { name: "BANK NIFTY", cmp: 52200.00, net: 261.00, lot: 15 },
+        { name: "FIN NIFTY", cmp: 23100.00, net: 115.50, lot: 25 },
+        { name: "RELIANCE", cmp: 2950.00, net: 22.10, lot: 250 },
+        { name: "TCS", cmp: 4200.00, net: 31.50, lot: 175 },
+        { name: "HDFC BANK", cmp: 1650.00, net: 12.30, lot: 550 },
+        { name: "INFOSYS", cmp: 1820.00, net: 13.60, lot: 400 },
+        { name: "SBIN", cmp: 810.00, net: 6.00, lot: 750 }
+      ],
+      mcx: [
+        { name: "GOLD", cmp: 72815, net: 182.69, lot: 100 },
+        { name: "GOLD MINI", cmp: 72815, net: 290.46, lot: 10 },
+        { name: "SILVER", cmp: 87500, net: 593.00, lot: 30 },
+        { name: "SILVER MINI", cmp: 87500, net: 593.00, lot: 5 },
+        { name: "CRUDE OIL", cmp: 6571, net: 50.04, lot: 100 },
+        { name: "NATURAL GAS", cmp: 241, net: 9.88, lot: 1250 },
+        { name: "COPPER", cmp: 848, net: 17.74, lot: 2500 }
+      ],
+      forex: [
+        { name: "EUR/USD", cmp: 1.0850, net: 0.0035, lot: 100000 },
+        { name: "GBP/USD", cmp: 1.2650, net: 0.0045, lot: 100000 },
+        { name: "USD/JPY", cmp: 155.20, net: 0.6500, lot: 100000 },
+        { name: "USD/INR", cmp: 83.95, net: 0.1500, lot: 1000 }
+      ]
+    };
+
+    let currentMarket = 'nse';
+
+    function switchMarket(type) {
+      currentMarket = type;
+
+      // Update Navigation Tab Styles
+      document.getElementById('tab-nse').className = type === 'nse' ? 'px-3 py-1.5 rounded font-bold bg-blue-600 text-white' : 'px-3 py-1.5 rounded font-bold bg-slate-700 text-slate-300 hover:bg-slate-600';
+      document.getElementById('tab-mcx').className = type === 'mcx' ? 'px-3 py-1.5 rounded font-bold bg-amber-500 text-black' : 'px-3 py-1.5 rounded font-bold bg-slate-700 text-slate-300 hover:bg-slate-600';
+      document.getElementById('tab-forex').className = type === 'forex' ? 'px-3 py-1.5 rounded font-bold bg-purple-600 text-white' : 'px-3 py-1.5 rounded font-bold bg-slate-700 text-slate-300 hover:bg-slate-600';
+
+      // Update Card Colors & Title
+      const title = document.getElementById('market-title');
+      const card = document.getElementById('header-card');
+
+      if (type === 'nse') {
+        title.innerText = "NSE Market Range Calculator";
+        title.className = "text-2xl font-black text-blue-400 text-center uppercase mb-6 tracking-wide";
+        card.className = "bg-blue-600 text-black p-6 rounded-t-xl text-center transition-all duration-300";
+      } else if (type === 'mcx') {
+        title.innerText = "MCX Commodity Range Calculator";
+        title.className = "text-2xl font-black text-amber-400 text-center uppercase mb-6 tracking-wide";
+        card.className = "bg-amber-500 text-black p-6 rounded-t-xl text-center transition-all duration-300";
+      } else {
+        title.innerText = "Forex Market Range Calculator";
+        title.className = "text-2xl font-black text-purple-400 text-center uppercase mb-6 tracking-wide";
+        card.className = "bg-purple-600 text-white p-6 rounded-t-xl text-center transition-all duration-300";
+      }
+
+      renderButtons();
+    }
 
     function renderButtons() {
-      const container = document.getElementById("nse-buttons");
+      const container = document.getElementById("ticker-buttons");
       container.innerHTML = "";
-      
-      nseData.forEach((item, index) => {
+      const list = marketData[currentMarket];
+
+      list.forEach((item, index) => {
         const btn = document.createElement("button");
-        btn.className = `px-3 py-1.5 text-xs font-bold rounded border ${index === 0 ? 'bg-amber-500 text-black border-amber-500' : 'bg-slate-800 text-white border-slate-600 hover:border-amber-400'}`;
+        let activeColor = currentMarket === 'nse' ? 'bg-blue-500 text-white' : currentMarket === 'mcx' ? 'bg-amber-500 text-black' : 'bg-purple-500 text-white';
+        
+        btn.className = `px-3 py-1.5 text-xs font-bold rounded border ${index === 0 ? activeColor : 'bg-slate-800 text-white border-slate-600 hover:border-slate-400'}`;
         btn.innerText = item.name;
+
         btn.onclick = () => {
-          document.querySelectorAll("#nse-buttons button").forEach(b => {
+          document.querySelectorAll("#ticker-buttons button").forEach(b => {
             b.className = "px-3 py-1.5 text-xs font-bold rounded border bg-slate-800 text-white border-slate-600";
           });
-          btn.className = "px-3 py-1.5 text-xs font-bold rounded border bg-amber-500 text-black border-amber-500";
+          btn.className = `px-3 py-1.5 text-xs font-bold rounded border ${activeColor}`;
           calculateAndDisplay(item);
         };
         container.appendChild(btn);
       });
-      if (nseData.length > 0) calculateAndDisplay(nseData[0]);
+
+      if (list.length > 0) calculateAndDisplay(list[0]);
     }
 
     function calculateAndDisplay(item) {
       document.getElementById("selected-name").innerText = item.name;
       document.getElementById("lot-size").innerText = item.lot;
-      document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2});
+      document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN');
 
       const tableBody = document.getElementById("levels-table-body");
       tableBody.innerHTML = "";
@@ -101,24 +161,29 @@
       levels.forEach(lvl => {
         const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(2);
         const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(2);
-        const waText = encodeURIComponent(`*NSE ${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
+        const waText = encodeURIComponent(`*${item.name}* (${lvl.label})\nCMP: ${item.cmp}\nUP Level: ${upLevel}\nDOWN Level: ${downLevel}`);
 
         const row = `
-          <tr class="border-b border-slate-700">
-            <td class="p-3 font-bold text-amber-400">${item.name}</td>
-            <td class="p-3">${item.lot}</td>
-            <td class="p-3">${item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            <td class="p-3">${lvl.label}</td>
-            <td class="p-3 font-bold text-emerald-400">${Number(upLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            <td class="p-3 font-bold text-rose-500">${Number(downLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            <td class="p-3"><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-bold inline-block">💬 WhatsApp</a></td>
+          <tr class="hover:bg-slate-750 border-b border-slate-700/50">
+            <td class="p-3 font-bold text-slate-200">${item.name}</td>
+            <td class="p-3 text-slate-400">${item.lot}</td>
+            <td class="p-3 text-slate-300 font-semibold">${item.cmp.toLocaleString('en-IN')}</td>
+            <td class="p-3 text-slate-400">${lvl.label}</td>
+            <td class="p-3 font-bold text-emerald-400">${Number(upLevel).toLocaleString('en-IN')}</td>
+            <td class="p-3 font-bold text-rose-500">${Number(downLevel).toLocaleString('en-IN')}</td>
+            <td class="p-3 text-center">
+              <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-bold inline-block shadow">
+                💬 WhatsApp
+              </a>
+            </td>
           </tr>
         `;
         tableBody.innerHTML += row;
       });
     }
 
-    renderButtons();
+    // Initialize Page
+    switchMarket('nse');
   </script>
 </body>
 </html>

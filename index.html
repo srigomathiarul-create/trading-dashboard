@@ -1,247 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Level Calculator - TradeCalc Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSE Market Range Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen relative pb-12">
+<body class="bg-slate-900 text-white min-h-screen">
 
-    <div id="main-content">
-        <!-- Live TradingView NSE Ticker Tape -->
-        <div class="tradingview-widget-container mb-4">
-            <div class="tradingview-widget-container__widget"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-            {
-                "symbols": [
-                    { "proName": "NSE:NIFTY", "title": "NIFTY 50" },
-                    { "proName": "NSE:BANKNIFTY", "title": "BANK NIFTY" },
-                    { "proName": "NSE:FINNIFTY", "title": "FIN NIFTY" },
-                    { "proName": "NSE:RELIANCE", "title": "RELIANCE" },
-                    { "proName": "NSE:TCS", "title": "TCS" },
-                    { "proName": "NSE:INFY", "title": "INFOSYS" },
-                    { "proName": "NSE:HDFCBANK", "title": "HDFC BANK" },
-                    { "proName": "NSE:ICICIBANK", "title": "ICICI BANK" },
-                    { "proName": "NSE:SBIN", "title": "SBIN" }
-                ],
-                "showSymbolLogo": true,
-                "colorTheme": "dark",
-                "isTransparent": false,
-                "displayMode": "adaptive",
-                "locale": "in"
-            }
-            </script>
+  <!-- Shared Navigation Bar -->
+  <div id="navbar"></div>
+
+  <div class="max-w-5xl mx-auto p-6 mt-6">
+    <div class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
+      <h1 class="text-2xl font-bold text-blue-400 text-center uppercase mb-6">NSE Market Range Calculator</h1>
+
+      <!-- NSE Tickers / Buttons -->
+      <div id="nse-buttons" class="flex flex-wrap gap-2 justify-center bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700 max-h-48 overflow-y-auto"></div>
+
+      <!-- Main Display Card -->
+      <div class="bg-amber-500 text-black p-6 rounded-t-xl text-center">
+        <h2 id="selected-name" class="text-3xl font-black mb-3">NIFTY 50</h2>
+        <div class="flex justify-center gap-6">
+          <div class="bg-slate-100 px-6 py-2 rounded text-black font-bold">LOT SIZE: <span id="lot-size">50</span></div>
+          <div class="bg-black text-white px-6 py-2 rounded font-bold">LIVE CMP: <span id="cmp-val">24,500.00</span></div>
         </div>
+      </div>
 
-        <main class="p-6 max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold mb-4 text-amber-400">NSE Market Range Calculator</h1>
-
-            <!-- Scrip Buttons Grid -->
-            <div class="flex flex-wrap gap-2 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-700 max-h-56 overflow-y-auto" id="nse-buttons"></div>
-
-            <!-- Calculator Inputs -->
-            <div class="bg-amber-500 text-gray-900 p-6 rounded-t-lg shadow-md border-b-2 border-amber-600">
-                <h1 id="header-title" class="text-4xl font-black text-center tracking-wider uppercase mb-6 text-black">NIFTY 50</h1>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
-                    <div>
-                        <label class="block text-xs font-black uppercase mb-1 text-gray-900">LOT SIZE</label>
-                        <input type="number" id="lot-input" readonly class="w-full bg-gray-100 text-black font-bold p-3 rounded border border-gray-400 text-xl text-center focus:outline-none cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase mb-1 text-gray-900">LIVE CMP</label>
-                        <input type="number" id="cmp-input" step="any" oninput="calculateLevels()" class="w-full bg-black text-white font-bold p-3 rounded border border-gray-800 text-xl text-center focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- Range Selectors -->
-                <div class="flex flex-wrap justify-center gap-6 mt-6 text-xs font-black text-black">
-                    <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="1" onchange="calculateLevels()"> <span>RANGE A</span></label>
-                    <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="2" onchange="calculateLevels()"> <span>RANGE B</span></label>
-                    <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="3" onchange="calculateLevels()"> <span>RANGE C</span></label>
-                    <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="4" onchange="calculateLevels()"> <span>RANGE D</span></label>
-                    <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="range" value="5" checked onchange="calculateLevels()"> <span>RANGE E</span></label>
-                </div>
-            </div>
-
-            <!-- Table Results -->
-            <div class="bg-gray-800 p-6 rounded-b-lg border border-gray-700 shadow-xl mb-6">
-                <div class="flex justify-between items-center mb-6 font-bold text-xl border-b border-gray-700 pb-3">
-                    <span class="text-emerald-400">TOTAL UP: <span id="total-up">0.00</span></span>
-                    <span class="text-rose-500">TOTAL DOWN: <span id="total-down">0.00</span></span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-700 text-gray-200 uppercase text-[18px]">
-                            <tr>
-                                <th class="p-4">SNAME</th>
-                                <th class="p-4">LOT</th>
-                                <th class="p-4">CMP</th>
-                                <th class="p-4">LEVEL</th>
-                                <th class="p-4 text-emerald-400">UP LEVEL</th>
-                                <th class="p-4 text-rose-500">DOWN LEVEL</th>
-                                <th class="p-4 text-center">ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="levels-table" class="divide-y divide-gray-700"></tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+      <!-- Output Table -->
+      <div class="overflow-x-auto bg-slate-800 rounded-b-xl p-4 border-t border-slate-700">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-slate-900 text-slate-400 text-sm">
+              <th class="p-3">SNAME</th>
+              <th class="p-3">LOT</th>
+              <th class="p-3">CMP</th>
+              <th class="p-3">LEVEL</th>
+              <th class="p-3">UP LEVEL</th>
+              <th class="p-3">DOWN LEVEL</th>
+              <th class="p-3">ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="levels-table-body"></tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
-    <!-- Running Marquee -->
-    <div class="fixed bottom-0 left-0 w-full bg-amber-500 text-black py-2 overflow-hidden whitespace-nowrap z-40 border-t border-amber-600 font-black">
-        <div class="inline-block animate-marquee uppercase tracking-widest text-sm">
-            ⚠️ THIS IS FOR EDUCATIONAL PURPOSE ONLY — HAPPY TRADING &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ⚠️ THIS IS FOR EDUCATIONAL PURPOSE ONLY — HAPPY TRADING
-        </div>
-    </div>
+  <script src="nav.js"></script>
+  <script>
+    const nseData = [
+      { name: "NIFTY 50", cmp: 24500.00, net: 122.50, lot: 50 },
+      { name: "BANK NIFTY", cmp: 52200.00, net: 261.00, lot: 15 },
+      { name: "FIN NIFTY", cmp: 23100.00, net: 115.50, lot: 25 },
+      { name: "MIDCP NIFTY", cmp: 13000.00, net: 65.00, lot: 50 },
+      { name: "RELIANCE", cmp: 2950.00, net: 22.10, lot: 250 },
+      { name: "TCS", cmp: 4200.00, net: 31.50, lot: 175 },
+      { name: "HDFC BANK", cmp: 1650.00, net: 12.30, lot: 550 },
+      { name: "INFOSYS", cmp: 1820.00, net: 13.60, lot: 400 },
+      { name: "ICICI BANK", cmp: 1210.00, net: 9.00, lot: 700 },
+      { name: "BHARTI AIRTEL", cmp: 1450.00, net: 10.80, lot: 475 },
+      { name: "SBIN", cmp: 810.00, net: 6.00, lot: 750 },
+      { name: "TATA MOTORS", cmp: 1080.00, net: 8.10, lot: 550 }
+    ];
 
-    <style>
-        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 18s linear infinite; }
-    </style>
-
-    <script type="text/javascript">
-        let currentScrip = "NIFTY 50";
-
-        // Full NIFTY 50 and key Index list
-        const nseScrips = {
-            "NIFTY 50": { cmp: 24500.00, lot: 50, stepPct: 0.005 },
-            "BANK NIFTY": { cmp: 51200.00, lot: 15, stepPct: 0.005 },
-            "FIN NIFTY": { cmp: 23100.00, lot: 40, stepPct: 0.005 },
-            "MIDCP NIFTY": { cmp: 13000.00, lot: 75, stepPct: 0.005 },
-            "ADANI ENT": { cmp: 3100.00, lot: 300, stepPct: 0.01 },
-            "ADANI PORTS": { cmp: 1350.00, lot: 625, stepPct: 0.01 },
-            "APOLLO HOSP": { cmp: 6700.00, lot: 125, stepPct: 0.01 },
-            "ASIAN PAINTS": { cmp: 2900.00, lot: 200, stepPct: 0.008 },
-            "AXIS BANK": { cmp: 1180.00, lot: 625, stepPct: 0.008 },
-            "BAJAJ AUTO": { cmp: 9800.00, lot: 125, stepPct: 0.008 },
-            "BAJAJ FINANCE": { cmp: 6900.00, lot: 125, stepPct: 0.01 },
-            "BAJAJ FINSERV": { cmp: 1850.00, lot: 500, stepPct: 0.01 },
-            "BHARTI AIRTEL": { cmp: 1450.00, lot: 475, stepPct: 0.008 },
-            "BPCL": { cmp: 350.00, lot: 1800, stepPct: 0.01 },
-            "BRITANNIA": { cmp: 5700.00, lot: 200, stepPct: 0.008 },
-            "CIPLA": { cmp: 1580.00, lot: 650, stepPct: 0.008 },
-            "COAL INDIA": { cmp: 510.00, lot: 1400, stepPct: 0.01 },
-            "DIVIS LAB": { cmp: 4900.00, lot: 200, stepPct: 0.01 },
-            "DR REDDY": { cmp: 6900.00, lot: 125, stepPct: 0.008 },
-            "EICHER MOTORS": { cmp: 4800.00, lot: 175, stepPct: 0.01 },
-            "GRASIM": { cmp: 2700.00, lot: 250, stepPct: 0.008 },
-            "HCL TECH": { cmp: 1680.00, lot: 350, stepPct: 0.008 },
-            "HDFCBANK": { cmp: 1640.00, lot: 550, stepPct: 0.008 },
-            "HDFCLIFE": { cmp: 710.00, lot: 1100, stepPct: 0.008 },
-            "HERO MOTOCORP": { cmp: 5300.00, lot: 150, stepPct: 0.01 },
-            "HINDALCO": { cmp: 680.00, lot: 1400, stepPct: 0.01 },
-            "HINDUNILVR": { cmp: 2750.00, lot: 300, stepPct: 0.008 },
-            "ICICIBANK": { cmp: 1210.00, lot: 700, stepPct: 0.008 },
-            "INDUSIND BANK": { cmp: 1400.00, lot: 500, stepPct: 0.01 },
-            "INFOSYS": { cmp: 1820.00, lot: 400, stepPct: 0.008 },
-            "ITC": { cmp: 490.00, lot: 1600, stepPct: 0.008 },
-            "JSW STEEL": { cmp: 930.00, lot: 675, stepPct: 0.01 },
-            "KOTAK BANK": { cmp: 1780.00, lot: 400, stepPct: 0.008 },
-            "L&T": { cmp: 3600.00, lot: 150, stepPct: 0.008 },
-            "LTIMINDTREE": { cmp: 5600.00, lot: 150, stepPct: 0.008 },
-            "M&M": { cmp: 2800.00, lot: 350, stepPct: 0.01 },
-            "MARUTI": { cmp: 12300.00, lot: 100, stepPct: 0.008 },
-            "NESTLE INDIA": { cmp: 2500.00, lot: 250, stepPct: 0.008 },
-            "NTPC": { cmp: 400.00, lot: 1500, stepPct: 0.01 },
-            "ONGC": { cmp: 320.00, lot: 3800, stepPct: 0.01 },
-            "POWERGRID": { cmp: 330.00, lot: 1800, stepPct: 0.01 },
-            "RELIANCE": { cmp: 2950.00, lot: 250, stepPct: 0.008 },
-            "SBILIFE": { cmp: 1820.00, lot: 375, stepPct: 0.008 },
-            "SBIN": { cmp: 820.00, lot: 1500, stepPct: 0.008 },
-            "SHRIRAM FINANCE": { cmp: 2900.00, lot: 300, stepPct: 0.01 },
-            "SUN PHARMA": { cmp: 1720.00, lot: 350, stepPct: 0.008 },
-            "TATA CONSUMER": { cmp: 1180.00, lot: 450, stepPct: 0.008 },
-            "TATA MOTORS": { cmp: 980.00, lot: 1000, stepPct: 0.01 },
-            "TATA STEEL": { cmp: 160.00, lot: 5500, stepPct: 0.01 },
-            "TCS": { cmp: 4150.00, lot: 175, stepPct: 0.008 },
-            "TECH MAHINDRA": { cmp: 1550.00, lot: 600, stepPct: 0.008 },
-            "TITAN": { cmp: 3400.00, lot: 175, stepPct: 0.008 },
-            "ULTRATECH": { cmp: 11200.00, lot: 100, stepPct: 0.008 },
-            "WIPRO": { cmp: 520.00, lot: 1500, stepPct: 0.01 }
+    function renderButtons() {
+      const container = document.getElementById("nse-buttons");
+      container.innerHTML = "";
+      
+      nseData.forEach((item, index) => {
+        const btn = document.createElement("button");
+        btn.className = `px-3 py-1.5 text-xs font-bold rounded border ${index === 0 ? 'bg-amber-500 text-black border-amber-500' : 'bg-slate-800 text-white border-slate-600 hover:border-amber-400'}`;
+        btn.innerText = item.name;
+        btn.onclick = () => {
+          document.querySelectorAll("#nse-buttons button").forEach(b => {
+            b.className = "px-3 py-1.5 text-xs font-bold rounded border bg-slate-800 text-white border-slate-600";
+          });
+          btn.className = "px-3 py-1.5 text-xs font-bold rounded border bg-amber-500 text-black border-amber-500";
+          calculateAndDisplay(item);
         };
+        container.appendChild(btn);
+      });
+      if (nseData.length > 0) calculateAndDisplay(nseData[0]);
+    }
 
-        window.onload = function() {
-            renderButtons();
-            selectScrip("NIFTY 50");
-        };
+    function calculateAndDisplay(item) {
+      document.getElementById("selected-name").innerText = item.name;
+      document.getElementById("lot-size").innerText = item.lot;
+      document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2});
 
-        function renderButtons() {
-            const container = document.getElementById("nse-buttons");
-            container.innerHTML = "";
-            Object.keys(nseScrips).forEach(name => {
-                const btn = document.createElement("button");
-                btn.className = `scrip-btn px-3 py-1.5 bg-gray-700 hover:bg-amber-500 hover:text-black rounded text-xs font-semibold transition text-gray-200`;
-                btn.innerText = name;
-                btn.onclick = () => selectScrip(name);
-                container.appendChild(btn);
-            });
-        }
+      const tableBody = document.getElementById("levels-table-body");
+      tableBody.innerHTML = "";
 
-        function selectScrip(name) {
-            currentScrip = name;
-            document.getElementById("header-title").innerText = name;
-            const item = nseScrips[name];
-            document.getElementById("lot-input").value = item.lot;
-            document.getElementById("cmp-input").value = item.cmp;
+      const levels = [
+        { label: "L1 (Range A)", mult: 1 },
+        { label: "L2 (Range B)", mult: 2 },
+        { label: "L3 (Range C)", mult: 3 }
+      ];
 
-            document.querySelectorAll(".scrip-btn").forEach(btn => {
-                if (btn.innerText.trim() === name) {
-                    btn.classList.add("bg-amber-500", "text-black", "font-bold");
-                    btn.classList.remove("bg-gray-700", "text-gray-200");
-                } else {
-                    btn.classList.remove("bg-amber-500", "text-black", "font-bold");
-                    btn.classList.add("bg-gray-700", "text-gray-200");
-                }
-            });
-            calculateLevels();
-        }
+      levels.forEach(lvl => {
+        const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(2);
+        const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(2);
+        const waText = encodeURIComponent(`*NSE ${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
 
-        function calculateLevels() {
-            const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
-            const lot = parseFloat(document.getElementById("lot-input").value) || 0;
-            const stepPct = nseScrips[currentScrip]?.stepPct || 0.008;
-            const stepValue = cmp * stepPct;
-            const selectedRange = parseInt(document.querySelector('input[name="range"]:checked').value) || 5;
+        const row = `
+          <tr class="border-b border-slate-700">
+            <td class="p-3 font-bold text-amber-400">${item.name}</td>
+            <td class="p-3">${item.lot}</td>
+            <td class="p-3">${item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td class="p-3">${lvl.label}</td>
+            <td class="p-3 font-bold text-emerald-400">${Number(upLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td class="p-3 font-bold text-rose-500">${Number(downLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td class="p-3"><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-bold inline-block">💬 WhatsApp</a></td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
 
-            document.getElementById("total-up").innerText = (cmp + (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById("total-down").innerText = (cmp - (stepValue * selectedRange)).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            const tbody = document.getElementById("levels-table");
-            tbody.innerHTML = "";
-
-            for (let i = 1; i <= selectedRange; i++) {
-                const upLevel = cmp + (stepValue * i);
-                const downLevel = cmp - (stepValue * i);
-                const levelName = `L${i} (Range ${String.fromCharCode(64 + i)})`;
-
-                const row = `
-                    <tr class="hover:bg-gray-800 text-[18px]">
-                        <td class="p-4 font-bold text-amber-400">${currentScrip}</td>
-                        <td class="p-4">${lot.toLocaleString('en-IN')}</td>
-                        <td class="p-4">${cmp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-4 text-gray-300">${levelName}</td>
-                        <td class="p-4 font-bold text-emerald-400">${upLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-4 font-bold text-rose-500">${downLevel.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="shareWhatsApp('${currentScrip}', ${cmp}, '${levelName}', ${upLevel.toFixed(2)}, ${downLevel.toFixed(2)})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-sm font-bold flex items-center justify-center gap-1 mx-auto">
-                                💬 WhatsApp
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            }
-        }
-
-        function shareWhatsApp(scrip, cmp, level, up, down) {
-            const text = `📊 *NSE LEVEL ALERT: ${scrip}*\n\n📍 *CMP:* ${cmp}\n🎯 *Target Level:* ${level}\n\n📈 *UP LEVEL:* ${up}\n📉 *DOWN LEVEL:* ${down}\n\n_Shared via TradeCalc Hub_`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-    </script>
+    renderButtons();
+  </script>
 </body>
 </html>

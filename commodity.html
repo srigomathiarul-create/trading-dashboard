@@ -4,154 +4,124 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCX Market Range Calculator</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #0f172a; color: #fff; padding: 20px; margin: 0; }
-    .calculator-card { background-color: #1e293b; padding: 20px; border-radius: 12px; max-width: 1000px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-    h1.title { color: #f59e0b; text-align: center; margin-bottom: 20px; font-size: 24px; text-transform: uppercase; }
-    
-    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 200px; overflow-y: auto; padding: 10px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; }
-    .btn { background: #334155; color: #fff; border: 1px solid #475569; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
-    .btn.active { background: #f59e0b; color: #000; border-color: #f59e0b; }
-    
-    .display-box { background: #f59e0b; color: #000; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
-    .display-title { font-size: 32px; font-weight: 900; margin-bottom: 15px; }
-    .inputs-flex { display: flex; justify-content: center; gap: 20px; align-items: center; }
-    .input-group { display: flex; flex-direction: column; align-items: center; }
-    .input-group label { font-size: 11px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-    .input-val { background: #e2e8f0; color: #000; font-size: 20px; font-weight: bold; padding: 8px 25px; border-radius: 4px; border: none; min-width: 100px; text-align: center; }
-    .cmp-val { background: #000; color: #fff; }
-    
-    .table-container { background: #1e293b; padding: 15px; border-radius: 0 0 8px 8px; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th { background: #0f172a; color: #94a3b8; padding: 12px; font-size: 13px; text-transform: uppercase; }
-    td { padding: 12px; border-bottom: 1px solid #334155; font-size: 14px; }
-    .up-level { color: #10b981; font-weight: bold; }
-    .down-level { color: #ef4444; font-weight: bold; }
-    
-    .wa-btn { background: #10b981; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen">
 
-<div class="calculator-card">
-  <h1 class="title">MCX Market Range Calculator</h1>
+  <div id="navbar"></div>
 
-  <!-- Commodity Buttons -->
-  <div class="btn-group" id="market-buttons"></div>
+  <div class="max-w-5xl mx-auto p-6 mt-6">
+    <div class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
+      <h1 class="text-2xl font-bold text-amber-400 text-center uppercase mb-6">MCX Commodity Range Calculator</h1>
 
-  <!-- Header Card -->
-  <div class="display-box">
-    <div class="display-title" id="selected-name">GOLD</div>
-    <div class="inputs-flex">
-      <div class="input-group">
-        <label>LOT SIZE</label>
-        <div class="input-val" id="lot-size">100</div>
+      <div id="market-buttons" class="flex flex-wrap gap-2 justify-center bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700 max-h-48 overflow-y-auto"></div>
+
+      <div class="bg-amber-500 text-black p-6 rounded-t-xl text-center">
+        <h2 id="selected-name" class="text-3xl font-black mb-3">GOLD</h2>
+        <div class="flex justify-center gap-6">
+          <div class="bg-slate-100 px-6 py-2 rounded text-black font-bold">LOT SIZE: <span id="lot-size">100</span></div>
+          <div class="bg-black text-white px-6 py-2 rounded font-bold">LIVE CMP: <span id="cmp-val">152815</span></div>
+        </div>
       </div>
-      <div class="input-group">
-        <label>LIVE CMP</label>
-        <div class="input-val cmp-val" id="cmp-val">152815</div>
+
+      <div class="overflow-x-auto bg-slate-800 rounded-b-xl p-4 border-t border-slate-700">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-slate-900 text-slate-400 text-sm">
+              <th class="p-3">SNAME</th>
+              <th class="p-3">LOT</th>
+              <th class="p-3">CMP</th>
+              <th class="p-3">LEVEL</th>
+              <th class="p-3">UP LEVEL</th>
+              <th class="p-3">DOWN LEVEL</th>
+              <th class="p-3">ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="levels-table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <!-- Table Section -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>SNAME</th>
-          <th>LOT</th>
-          <th>CMP</th>
-          <th>LEVEL</th>
-          <th>UP LEVEL</th>
-          <th>DOWN LEVEL</th>
-          <th>ACTION</th>
-        </tr>
-      </thead>
-      <tbody id="levels-table-body"></tbody>
-    </table>
-  </div>
-</div>
+  <script src="nav.js"></script>
+  <script>
+    const mcxData = [
+      { name: "GOLD", cmp: 152815, net: 182.69, lot: 100 },
+      { name: "GOLD MINI", cmp: 152815, net: 290.46, lot: 10 },
+      { name: "GOLD GUINEA", cmp: 122820, net: 212.00, lot: 1 },
+      { name: "GOLD TEN", cmp: 152815, net: 243.58, lot: 1 },
+      { name: "GOLD PETAL", cmp: 15356, net: 44.49, lot: 1 },
+      { name: "SILVER", cmp: 237500, net: 593.00, lot: 30 },
+      { name: "SILVER MINI", cmp: 237500, net: 593.00, lot: 5 },
+      { name: "SILVER MICRO", cmp: 237500, net: 593.00, lot: 1 },
+      { name: "CRUDE", cmp: 8571, net: 50.04, lot: 100 },
+      { name: "CRUDE MINI", cmp: 8571, net: 50.04, lot: 10 },
+      { name: "NATURAL GAS", cmp: 281, net: 9.88, lot: 1250 },
+      { name: "NAT GAS MINI", cmp: 281, net: 9.88, lot: 250 },
+      { name: "ALUMINUM", cmp: 348, net: 3.50, lot: 5000 },
+      { name: "ALUMINUM MINI", cmp: 348, net: 3.50, lot: 1000 },
+      { name: "LEAD", cmp: 197, net: 2.78, lot: 5000 },
+      { name: "LEAD MINI", cmp: 197, net: 2.78, lot: 1000 },
+      { name: "ZINC", cmp: 418, net: 3.96, lot: 5000 },
+      { name: "ZINC MINI", cmp: 418, net: 3.96, lot: 1000 },
+      { name: "COPPER", cmp: 1378, net: 17.74, lot: 2500 },
+      { name: "NICKEL", cmp: 1617, net: 35.36, lot: 2500 }
+    ];
 
-<script>
-const mcxData = [
-  { name: "GOLD", cmp: 152815, net: 182.69, lot: 100 },
-  { name: "GOLD MINI", cmp: 152815, net: 290.46, lot: 10 },
-  { name: "GOLD GUINEA", cmp: 122820, net: 212.00, lot: 1 },
-  { name: "GOLD TEN", cmp: 152815, net: 243.58, lot: 1 },
-  { name: "GOLD PETAL", cmp: 15356, net: 44.49, lot: 1 },
-  { name: "SILVER", cmp: 237500, net: 593.00, lot: 30 },
-  { name: "SILVER MINI", cmp: 237500, net: 593.00, lot: 5 },
-  { name: "SILVER MICRO", cmp: 237500, net: 593.00, lot: 1 },
-  { name: "CRUDE", cmp: 8571, net: 50.04, lot: 100 },
-  { name: "CRUDE MINI", cmp: 8571, net: 50.04, lot: 10 },
-  { name: "NATURAL GAS", cmp: 281, net: 9.88, lot: 1250 },
-  { name: "NAT GAS MINI", cmp: 281, net: 9.88, lot: 250 },
-  { name: "ALUMINUM", cmp: 348, net: 3.50, lot: 5000 },
-  { name: "ALUMINUM MINI", cmp: 348, net: 3.50, lot: 1000 },
-  { name: "LEAD", cmp: 197, net: 2.78, lot: 5000 },
-  { name: "LEAD MINI", cmp: 197, net: 2.78, lot: 1000 },
-  { name: "ZINC", cmp: 418, net: 3.96, lot: 5000 },
-  { name: "ZINC MINI", cmp: 418, net: 3.96, lot: 1000 },
-  { name: "COPPER", cmp: 1378, net: 17.74, lot: 2500 },
-  { name: "NICKEL", cmp: 1617, net: 35.36, lot: 2500 }
-];
+    function renderButtons() {
+      const container = document.getElementById("market-buttons");
+      container.innerHTML = "";
+      mcxData.forEach((item, index) => {
+        const btn = document.createElement("button");
+        btn.className = `px-3 py-1.5 text-xs font-bold rounded border ${index === 0 ? 'bg-amber-500 text-black border-amber-500' : 'bg-slate-800 text-white border-slate-600 hover:border-amber-400'}`;
+        btn.innerText = item.name;
+        btn.onclick = () => {
+          document.querySelectorAll("#market-buttons button").forEach(b => {
+            b.className = "px-3 py-1.5 text-xs font-bold rounded border bg-slate-800 text-white border-slate-600";
+          });
+          btn.className = "px-3 py-1.5 text-xs font-bold rounded border bg-amber-500 text-black border-amber-500";
+          calculateAndDisplay(item);
+        };
+        container.appendChild(btn);
+      });
+      if (mcxData.length > 0) calculateAndDisplay(mcxData[0]);
+    }
 
-function renderButtons() {
-  const container = document.getElementById("market-buttons");
-  container.innerHTML = "";
-  
-  mcxData.forEach((item, index) => {
-    const btn = document.createElement("button");
-    btn.className = "btn" + (index === 0 ? " active" : "");
-    btn.innerText = item.name;
-    btn.onclick = () => {
-      document.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      calculateAndDisplay(item);
-    };
-    container.appendChild(btn);
-  });
+    function calculateAndDisplay(item) {
+      document.getElementById("selected-name").innerText = item.name;
+      document.getElementById("lot-size").innerText = item.lot;
+      document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN');
 
-  if (mcxData.length > 0) calculateAndDisplay(mcxData[0]);
-}
+      const tableBody = document.getElementById("levels-table-body");
+      tableBody.innerHTML = "";
 
-function calculateAndDisplay(item) {
-  document.getElementById("selected-name").innerText = item.name;
-  document.getElementById("lot-size").innerText = item.lot;
-  document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN');
+      const levels = [
+        { label: "L1 (Range A)", mult: 1 },
+        { label: "L2 (Range B)", mult: 2 },
+        { label: "L3 (Range C)", mult: 3 }
+      ];
 
-  const tableBody = document.getElementById("levels-table-body");
-  tableBody.innerHTML = "";
+      levels.forEach(lvl => {
+        const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(2);
+        const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(2);
+        const waText = encodeURIComponent(`*${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
 
-  const levels = [
-    { label: "L1 (Range A)", mult: 1 },
-    { label: "L2 (Range B)", mult: 2 },
-    { label: "L3 (Range C)", mult: 3 }
-  ];
+        const row = `
+          <tr class="border-b border-slate-700">
+            <td class="p-3 font-bold text-amber-400">${item.name}</td>
+            <td class="p-3">${item.lot}</td>
+            <td class="p-3">${item.cmp.toLocaleString('en-IN')}</td>
+            <td class="p-3">${lvl.label}</td>
+            <td class="p-3 font-bold text-emerald-400">${Number(upLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td class="p-3 font-bold text-rose-500">${Number(downLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            <td class="p-3"><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-bold inline-block">💬 WhatsApp</a></td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
 
-  levels.forEach(lvl => {
-    const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(2);
-    const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(2);
-    const waText = encodeURIComponent(`*${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
-
-    const row = `
-      <tr>
-        <td style="color: #f59e0b; font-weight: bold;">${item.name}</td>
-        <td>${item.lot}</td>
-        <td>${item.cmp.toLocaleString('en-IN')}</td>
-        <td>${lvl.label}</td>
-        <td class="up-level">${Number(upLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-        <td class="down-level">${Number(downLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-        <td><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="wa-btn">💬 WhatsApp</a></td>
-      </tr>
-    `;
-    tableBody.innerHTML += row;
-  });
-}
-
-renderButtons();
-</script>
-
+    renderButtons();
+  </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forex Trading Hub</title>
+  <title>Forex Trading Dashboard</title>
   <style>
     body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; }
     
@@ -17,9 +17,9 @@
     .tab-btn.active { background: #007aff; color: #ffffff; }
 
     /* Tab Content Boxes */
-    .tab-content { display: none; height: 600px; width: 100%; }
+    .tab-content { display: none; min-height: 550px; width: 100%; }
     .tab-content.active { display: block; }
-    iframe { border: 0; border-radius: 8px; width: 100%; height: 100%; }
+    iframe { border: 0; border-radius: 8px; width: 100%; height: 550px; }
   </style>
 </head>
 <body>
@@ -35,9 +35,27 @@
     <button class="tab-btn" onclick="switchTab(event, 'calculator')">Calculator</button>
   </div>
 
-  <!-- Tab 1: Interactive Chart -->
+  <!-- Tab 1: Finlogix Chart Widget -->
   <div id="chart" class="tab-content active">
-    <iframe src="https://s.tradingview.com/widgetembed/?symbol=FX%3AEURUSD&interval=D&theme=dark"></iframe>
+    <!-- Finlogix Widget BEGIN -->
+    <div class="finlogix-container"></div>
+    <script type="text/javascript" src="https://widget.finlogix.com/Widget.js"></script>
+    <script type="text/javascript">
+      Widget.init({
+        widgetId: "04d8a90a-177a-42a5-a5cc-0029644b386c",
+        type: "BigChart",
+        language: "en",
+        symbolName: "Apple",
+        hasSearchBar: false,
+        hasSymbolName: false,
+        hasSymbolChange: false,
+        hasButton: false,
+        chartShape: "candles",
+        timePeriod: "D1",
+        isAdaptive: true
+      });
+    </script>
+    <!-- Finlogix Widget END -->
   </div>
 
   <!-- Tab 2: Live Tickers -->
@@ -65,15 +83,15 @@
     <iframe src="https://s.tradingview.com/embed-widget/timeline/?theme=dark"></iframe>
   </div>
 
-  <!-- Tab 7: Calculator Placeholder -->
+  <!-- Tab 7: Calculator -->
   <div id="calculator" class="tab-content">
     <div style="background:#1e293b; padding:40px; text-align:center; border-radius:8px;">
       <h2>Forex Position Size & Pip Calculator</h2>
-      <p>Custom position calculator tool content goes here.</p>
+      <p>Custom calculation tools and position size estimators.</p>
     </div>
   </div>
 
-  <!-- JavaScript to handle Tab switching -->
+  <!-- Tab Switch Script -->
   <script>
     function switchTab(event, tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));

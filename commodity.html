@@ -1,72 +1,61 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCX Commodity Market Range Calculator</title>
+  <title>MCX Market Range Calculator</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1117; color: #c9d1d9; padding: 20px; }
-    .calculator-container { max-width: 950px; margin: 0 auto; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    h2 { color: #f59e0b; text-align: center; margin-bottom: 20px; font-size: 24px; text-transform: uppercase; }
+    body { font-family: Arial, sans-serif; background-color: #0f172a; color: #fff; padding: 20px; margin: 0; }
+    .calculator-card { background-color: #1e293b; padding: 20px; border-radius: 12px; max-width: 1000px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    h1.title { color: #f59e0b; text-align: center; margin-bottom: 20px; font-size: 24px; text-transform: uppercase; }
     
-    /* Category Filter Tabs */
-    .category-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-    .cat-btn { background: #21262d; border: 1px solid #30363d; color: #8b949e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .cat-btn.active { background: #f59e0b; color: #000; border-color: #f59e0b; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; max-height: 200px; overflow-y: auto; padding: 10px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; }
+    .btn { background: #334155; color: #fff; border: 1px solid #475569; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn.active { background: #f59e0b; color: #000; border-color: #f59e0b; }
     
-    /* Commodity Buttons Grid */
-    .buttons-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 180px; overflow-y: auto; padding: 10px; background: #0d1117; border-radius: 8px; border: 1px solid #21262d; margin-bottom: 20px; }
-    .item-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; }
-    .item-btn.active { background: #238636; color: #fff; border-color: #238636; font-weight: bold; }
+    .display-box { background: #f59e0b; color: #000; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+    .display-title { font-size: 32px; font-weight: 900; margin-bottom: 15px; }
+    .inputs-flex { display: flex; justify-content: center; gap: 20px; align-items: center; }
+    .input-group { display: flex; flex-direction: column; align-items: center; }
+    .input-group label { font-size: 11px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .input-val { background: #e2e8f0; color: #000; font-size: 20px; font-weight: bold; padding: 8px 25px; border-radius: 4px; border: none; min-width: 100px; text-align: center; }
+    .cmp-val { background: #000; color: #fff; }
     
-    /* Selected Header Card */
-    .display-header { background: #21262d; border-left: 5px solid #f59e0b; padding: 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .display-title { font-size: 22px; font-weight: bold; color: #fff; }
-    .display-stats { font-size: 15px; }
-    .stat-badge { background: #0d1117; padding: 4px 10px; border-radius: 4px; border: 1px solid #30363d; margin-left: 5px; color: #58a6ff; font-weight: bold; }
+    .table-container { background: #1e293b; padding: 15px; border-radius: 0 0 8px 8px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: #0f172a; color: #94a3b8; padding: 12px; font-size: 13px; text-transform: uppercase; }
+    td { padding: 12px; border-bottom: 1px solid #334155; font-size: 14px; }
+    .up-level { color: #10b981; font-weight: bold; }
+    .down-level { color: #ef4444; font-weight: bold; }
     
-    /* Table Styling */
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
-    th { background-color: #21262d; color: #8b949e; padding: 12px; font-size: 14px; border-bottom: 2px solid #30363d; }
-    td { padding: 12px; border-bottom: 1px solid #21262d; font-size: 14px; }
-    
-    .up-level { color: #3fb950; font-weight: bold; }
-    .down-level { color: #f85149; font-weight: bold; }
-    
-    .wa-link { background-color: #238636; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block; }
-    .wa-link:hover { background-color: #2ea043; }
+    .wa-btn { background: #10b981; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
   </style>
 </head>
 <body>
 
-<div class="calculator-container">
-  <h2>MCX Commodity Range Calculator</h2>
-  
-  <!-- Category Tabs -->
-  <div class="category-tabs">
-    <button class="cat-btn active" onclick="filterCategory('ALL')">ALL</button>
-    <button class="cat-btn" onclick="filterCategory('BULLION')">BULLION</button>
-    <button class="cat-btn" onclick="filterCategory('ENERGY')">ENERGY</button>
-    <button class="cat-btn" onclick="filterCategory('METALS')">METALS</button>
-  </div>
+<div class="calculator-card">
+  <h1 class="title">MCX Market Range Calculator</h1>
 
-  <!-- Buttons List -->
-  <div class="buttons-grid" id="commodity-buttons"></div>
+  <!-- Commodity Buttons -->
+  <div class="btn-group" id="market-buttons"></div>
 
-  <!-- Header Info -->
-  <div class="display-header">
-    <div class="display-title" id="selected-sname">GOLD</div>
-    <div class="display-stats">
-      LOT SIZE: <span class="stat-badge" id="selected-lot">100</span>
-      CMP: <span class="stat-badge" id="selected-cmp">1,52,815.00</span>
-      NET: <span class="stat-badge" id="selected-net">182.69</span>
+  <!-- Header Card -->
+  <div class="display-box">
+    <div class="display-title" id="selected-name">GOLD</div>
+    <div class="inputs-flex">
+      <div class="input-group">
+        <label>LOT SIZE</label>
+        <div class="input-val" id="lot-size">100</div>
+      </div>
+      <div class="input-group">
+        <label>LIVE CMP</label>
+        <div class="input-val cmp-val" id="cmp-val">152815</div>
+      </div>
     </div>
   </div>
 
-  <!-- Output Table -->
-  <div class="table-responsive">
+  <!-- Table Section -->
+  <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -79,107 +68,88 @@
           <th>ACTION</th>
         </tr>
       </thead>
-      <tbody id="levels-table-body">
-        <!-- Javascript populates data here -->
-      </tbody>
+      <tbody id="levels-table-body"></tbody>
     </table>
   </div>
 </div>
 
 <script>
-const mcxCommodities = [
-  // Bullion
-  { cat: "BULLION", name: "GOLD", cmp: 152815.00, d: 800, net: 182.69, lot: 100.00 },
-  { cat: "BULLION", name: "GOLD MINI", cmp: 152815.00, d: 500, net: 290.46, lot: 10.00 },
-  { cat: "BULLION", name: "GOLD GUINEA", cmp: 122820.00, d: 500, net: 212.00, lot: 1.00 },
-  { cat: "BULLION", name: "GOLD TEN", cmp: 152815.00, d: 600, net: 243.58, lot: 1.00 },
-  { cat: "BULLION", name: "GOLD PETAL", cmp: 15356.00, d: 300, net: 44.49, lot: 1.00 },
-  { cat: "BULLION", name: "SILVER", cmp: 237500.00, d: 500, net: 593.00, lot: 30.00 },
-  { cat: "BULLION", name: "SILVER MINI", cmp: 237500.00, d: 500, net: 593.00, lot: 5.00 },
-  { cat: "BULLION", name: "SILVER MICRO", cmp: 237500.00, d: 500, net: 593.00, lot: 1.00 },
-
-  // Energy
-  { cat: "ENERGY", name: "CRUDE", cmp: 8571.00, d: 139, net: 50.04, lot: 100.00 },
-  { cat: "ENERGY", name: "CRUDE MINI", cmp: 8571.00, d: 139, net: 50.04, lot: 10.00 },
-  { cat: "ENERGY", name: "NATURAL GAS", cmp: 281.00, d: 80, net: 9.88, lot: 1250.00 },
-  { cat: "ENERGY", name: "NAT GAS MINI", cmp: 281.00, d: 80, net: 9.88, lot: 250.00 },
-
-  // Metals
-  { cat: "METALS", name: "ALUMINUM", cmp: 348.00, d: 72, net: 3.50, lot: 5000.00 },
-  { cat: "METALS", name: "ALUMINUM MINI", cmp: 348.00, d: 72, net: 3.50, lot: 1000.00 },
-  { cat: "METALS", name: "LEAD", cmp: 197.00, d: 36, net: 2.78, lot: 5000.00 },
-  { cat: "METALS", name: "LEAD MINI", cmp: 197.00, d: 36, net: 2.78, lot: 1000.00 },
-  { cat: "METALS", name: "ZINC", cmp: 418.00, d: 72, net: 3.96, lot: 5000.00 },
-  { cat: "METALS", name: "ZINC MINI", cmp: 418.00, d: 72, net: 3.96, lot: 1000.00 },
-  { cat: "METALS", name: "COPPER", cmp: 1378.00, d: 72, net: 17.74, lot: 2500.00 },
-  { cat: "METALS", name: "NICKEL", cmp: 1617.00, d: 84, net: 35.36, lot: 2500.00 }
+const mcxData = [
+  { name: "GOLD", cmp: 152815, net: 182.69, lot: 100 },
+  { name: "GOLD MINI", cmp: 152815, net: 290.46, lot: 10 },
+  { name: "GOLD GUINEA", cmp: 122820, net: 212.00, lot: 1 },
+  { name: "GOLD TEN", cmp: 152815, net: 243.58, lot: 1 },
+  { name: "GOLD PETAL", cmp: 15356, net: 44.49, lot: 1 },
+  { name: "SILVER", cmp: 237500, net: 593.00, lot: 30 },
+  { name: "SILVER MINI", cmp: 237500, net: 593.00, lot: 5 },
+  { name: "SILVER MICRO", cmp: 237500, net: 593.00, lot: 1 },
+  { name: "CRUDE", cmp: 8571, net: 50.04, lot: 100 },
+  { name: "CRUDE MINI", cmp: 8571, net: 50.04, lot: 10 },
+  { name: "NATURAL GAS", cmp: 281, net: 9.88, lot: 1250 },
+  { name: "NAT GAS MINI", cmp: 281, net: 9.88, lot: 250 },
+  { name: "ALUMINUM", cmp: 348, net: 3.50, lot: 5000 },
+  { name: "ALUMINUM MINI", cmp: 348, net: 3.50, lot: 1000 },
+  { name: "LEAD", cmp: 197, net: 2.78, lot: 5000 },
+  { name: "LEAD MINI", cmp: 197, net: 2.78, lot: 1000 },
+  { name: "ZINC", cmp: 418, net: 3.96, lot: 5000 },
+  { name: "ZINC MINI", cmp: 418, net: 3.96, lot: 1000 },
+  { name: "COPPER", cmp: 1378, net: 17.74, lot: 2500 },
+  { name: "NICKEL", cmp: 1617, net: 35.36, lot: 2500 }
 ];
 
-let currentCat = "ALL";
-
 function renderButtons() {
-  const container = document.getElementById("commodity-buttons");
+  const container = document.getElementById("market-buttons");
   container.innerHTML = "";
-
-  const list = currentCat === "ALL" ? mcxCommodities : mcxCommodities.filter(i => i.cat === currentCat);
-
-  list.forEach((item, index) => {
+  
+  mcxData.forEach((item, index) => {
     const btn = document.createElement("button");
-    btn.className = "item-btn" + (index === 0 ? " active" : "");
+    btn.className = "btn" + (index === 0 ? " active" : "");
     btn.innerText = item.name;
-    btn.onclick = (e) => {
-      document.querySelectorAll(".item-btn").forEach(b => b.classList.remove("active"));
+    btn.onclick = () => {
+      document.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      calculateLevels(item);
+      calculateAndDisplay(item);
     };
     container.appendChild(btn);
   });
 
-  if (list.length > 0) calculateLevels(list[0]);
+  if (mcxData.length > 0) calculateAndDisplay(mcxData[0]);
 }
 
-function filterCategory(category) {
-  currentCat = category;
-  document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-  event.target.classList.add("active");
-  renderButtons();
-}
+function calculateAndDisplay(item) {
+  document.getElementById("selected-name").innerText = item.name;
+  document.getElementById("lot-size").innerText = item.lot;
+  document.getElementById("cmp-val").innerText = item.cmp.toLocaleString('en-IN');
 
-function calculateLevels(item) {
-  document.getElementById("selected-sname").innerText = item.name;
-  document.getElementById("selected-lot").innerText = item.lot;
-  document.getElementById("selected-cmp").innerText = item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2});
-  document.getElementById("selected-net").innerText = item.net;
+  const tableBody = document.getElementById("levels-table-body");
+  tableBody.innerHTML = "";
 
-  const tbody = document.getElementById("levels-table-body");
-  tbody.innerHTML = "";
-
-  const ranges = [
+  const levels = [
     { label: "L1 (Range A)", mult: 1 },
     { label: "L2 (Range B)", mult: 2 },
     { label: "L3 (Range C)", mult: 3 }
   ];
 
-  ranges.forEach(r => {
-    const up = (item.cmp + (item.net * r.mult)).toFixed(2);
-    const down = (item.cmp - (item.net * r.mult)).toFixed(2);
-    const waText = encodeURIComponent(`*${item.name}* Level: ${r.label}\nCMP: ${item.cmp}\nUP Target: ${up}\nDOWN Target: ${down}`);
+  levels.forEach(lvl => {
+    const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(2);
+    const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(2);
+    const waText = encodeURIComponent(`*${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td style="color: #f59e0b; font-weight: bold;">${item.name}</td>
-      <td>${item.lot}</td>
-      <td>${item.cmp.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-      <td>${r.label}</td>
-      <td class="up-level">${Number(up).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-      <td class="down-level">${Number(down).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-      <td><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="wa-link">💬 WhatsApp</a></td>
+    const row = `
+      <tr>
+        <td style="color: #f59e0b; font-weight: bold;">${item.name}</td>
+        <td>${item.lot}</td>
+        <td>${item.cmp.toLocaleString('en-IN')}</td>
+        <td>${lvl.label}</td>
+        <td class="up-level">${Number(upLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td class="down-level">${Number(downLevel).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+        <td><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="wa-btn">💬 WhatsApp</a></td>
+      </tr>
     `;
-    tbody.appendChild(tr);
+    tableBody.innerHTML += row;
   });
 }
 
-// Initialize on page load
 renderButtons();
 </script>
 

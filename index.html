@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forex Trading Dashboard</title>
+  <title>NSE Market Dashboard</title>
   <style>
     body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; }
     
-    /* Navigation Bar / Tabs */
+    /* Top Ticker Bar */
+    .ticker-container { margin-bottom: 20px; border-radius: 8px; overflow: hidden; }
+
+    /* Navigation Tabs */
     .tab-navigation { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center; }
     .tab-btn {
       background: #1e293b; color: #94a3b8; border: none; padding: 10px 18px; 
@@ -17,81 +20,74 @@
     .tab-btn.active { background: #007aff; color: #ffffff; }
 
     /* Tab Content Boxes */
-    .tab-content { display: none; min-height: 550px; width: 100%; }
+    .tab-content { display: none; height: 600px; width: 100%; }
     .tab-content.active { display: block; }
-    iframe { border: 0; border-radius: 8px; width: 100%; height: 550px; }
+    iframe { border: 0; border-radius: 8px; width: 100%; height: 100%; }
   </style>
 </head>
 <body>
 
-  <!-- Navigation Tabs -->
+  <!-- Top Moving Ticker Tape with Indian Market (NSE) Tickers -->
+  <div class="ticker-container">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          { "proName": "NSE:NIFTY", "title": "NIFTY 50" },
+          { "proName": "NSE:BANKNIFTY", "title": "BANK NIFTY" },
+          { "proName": "NSE:FINNIFTY", "title": "FIN NIFTY" },
+          { "proName": "NSE:RELIANCE", "title": "RELIANCE" },
+          { "proName": "NSE:HDFCBANK", "title": "HDFC BANK" },
+          { "proName": "NSE:ICICIBANK", "title": "ICICI BANK" },
+          { "proName": "NSE:INFY", "title": "INFOSYS" },
+          { "proName": "NSE:TCS", "title": "TCS" }
+        ],
+        "showSymbolLogo": true,
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "adaptive",
+        "locale": "in"
+      }
+      </script>
+    </div>
+  </div>
+
+  <!-- Dashboard Navigation Tabs -->
   <div class="tab-navigation">
-    <button class="tab-btn active" onclick="switchTab(event, 'chart')">Chart</button>
-    <button class="tab-btn" onclick="switchTab(event, 'tickers')">Tickers</button>
-    <button class="tab-btn" onclick="switchTab(event, 'signals')">Signals</button>
-    <button class="tab-btn" onclick="switchTab(event, 'overview')">Market Overview</button>
-    <button class="tab-btn" onclick="switchTab(event, 'calendar')">Calendar</button>
-    <button class="tab-btn" onclick="switchTab(event, 'news')">News Feed</button>
-    <button class="tab-btn" onclick="switchTab(event, 'calculator')">Calculator</button>
+    <button class="tab-btn active" onclick="switchTab(event, 'chart')">NSE Chart</button>
+    <button class="tab-btn" onclick="switchTab(event, 'signals')">Technical Analysis</button>
+    <button class="tab-btn" onclick="switchTab(event, 'overview')">NSE Overview</button>
+    <button class="tab-btn" onclick="switchTab(event, 'calendar')">Economic Calendar</button>
+    <button class="tab-btn" onclick="switchTab(event, 'news')">Market News</button>
   </div>
 
-  <!-- Tab 1: Finlogix Chart Widget -->
+  <!-- Tab 1: Live Interactive NSE Chart -->
   <div id="chart" class="tab-content active">
-    <!-- Finlogix Widget BEGIN -->
-    <div class="finlogix-container"></div>
-    <script type="text/javascript" src="https://widget.finlogix.com/Widget.js"></script>
-    <script type="text/javascript">
-      Widget.init({
-        widgetId: "04d8a90a-177a-42a5-a5cc-0029644b386c",
-        type: "BigChart",
-        language: "en",
-        symbolName: "Apple",
-        hasSearchBar: false,
-        hasSymbolName: false,
-        hasSymbolChange: false,
-        hasButton: false,
-        chartShape: "candles",
-        timePeriod: "D1",
-        isAdaptive: true
-      });
-    </script>
-    <!-- Finlogix Widget END -->
+    <iframe src="https://s.tradingview.com/widgetembed/?symbol=NSE%3ANIFTY&interval=D&theme=dark"></iframe>
   </div>
 
-  <!-- Tab 2: Live Tickers -->
-  <div id="tickers" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/tickers/?theme=dark&symbols=FX%3AEURUSD%2CFX%3AGBPUSD%2CFX%3AUSDJPY%2COANDA%3AXAUUSD"></iframe>
-  </div>
-
-  <!-- Tab 3: Technical Signals -->
+  <!-- Tab 2: Technical Signals & Analysis -->
   <div id="signals" class="tab-content">
-    <iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?theme=dark&symbol=FX%3AEURUSD"></iframe>
+    <iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?theme=dark&symbol=NSE%3ANIFTY"></iframe>
   </div>
 
-  <!-- Tab 4: Market Overview -->
+  <!-- Tab 3: NSE Market Overview -->
   <div id="overview" class="tab-content">
     <iframe src="https://s.tradingview.com/embed-widget/market-overview/?theme=dark"></iframe>
   </div>
 
-  <!-- Tab 5: Economic Calendar -->
+  <!-- Tab 4: Economic Calendar -->
   <div id="calendar" class="tab-content">
     <iframe src="https://s.tradingview.com/embed-widget/events/?theme=dark"></iframe>
   </div>
 
-  <!-- Tab 6: News Feed -->
+  <!-- Tab 5: Market News Feed -->
   <div id="news" class="tab-content">
     <iframe src="https://s.tradingview.com/embed-widget/timeline/?theme=dark"></iframe>
   </div>
 
-  <!-- Tab 7: Calculator -->
-  <div id="calculator" class="tab-content">
-    <div style="background:#1e293b; padding:40px; text-align:center; border-radius:8px;">
-      <h2>Forex Position Size & Pip Calculator</h2>
-      <p>Custom calculation tools and position size estimators.</p>
-    </div>
-  </div>
-
-  <!-- Tab Switch Script -->
+  <!-- JavaScript to Handle Tab Switching -->
   <script>
     function switchTab(event, tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));

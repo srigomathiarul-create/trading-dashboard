@@ -1,21 +1,82 @@
-function calculateLevels() {
-    const cmp = parseFloat(document.getElementById("cmp-input").value) || 0;
-    const lot = parseFloat(document.getElementById("lot-input").value) || 0;
-    
-    // Prevent execution if input is empty or market is offline
-    if (cmp === 0) return;
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <title>MCX Range Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #121824; color: #fff; padding: 20px; }
+    .calculator-card { background-color: #1e293b; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .btn { background: #334155; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+    .btn.active { background: #f59e0b; color: #000; font-weight: bold; }
+    .output-box { background: #0f172a; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    .up-text { color: #10b981; font-weight: bold; }
+    .down-text { color: #ef4444; font-weight: bold; }
+  </style>
+</head>
+<body>
 
-    // Define step sizes dynamically based on selected asset
-    const scripConfig = commodityScrips[currentScrip] || { stepPct: 0.005 };
-    const stepValue = cmp * scripConfig.stepPct;
+<div class="calculator-card">
+  <h2>MCX Market Range Calculator</h2>
+  
+  <!-- Commodity Buttons -->
+  <div class="btn-group" id="commodity-buttons"></div>
 
-    const activeRadio = document.querySelector('input[name="range"]:checked');
-    const selectedRange = activeRadio ? parseInt(activeRadio.value) : 5;
+  <!-- Calculator Screen -->
+  <div class="output-box">
+    <h3 id="selected-name">GOLD</h3>
+    <p>LOT SIZE: <span id="lot-size">100</span> | CMP: <span id="cmp-val">152815</span></p>
+    <p>NET Shift: <span id="net-val">182.69</span></p>
+    <hr>
+    <h4>Target Levels:</h4>
+    <p>L1 (Range A): <span class="up-text" id="up-l1">0</span> | <span class="down-text" id="down-l1">0</span></p>
+    <p>L2 (Range B): <span class="up-text" id="up-l2">0</span> | <span class="down-text" id="down-l2">0</span></p>
+    <p>L3 (Range C): <span class="up-text" id="up-l3">0</span> | <span class="down-text" id="down-l3">0</span></p>
+  </div>
+</div>
 
-    // Calculate ranges
-    const totalUp = cmp + (stepValue * selectedRange);
-    const totalDown = cmp - (stepValue * selectedRange);
+<script>
+const mcxData = [
+  { name: "GOLD", cmp: 152815, d: 800, net: 182.69, lot: 100 },
+  { name: "SILVER", cmp: 237500, d: 500, net: 593.00, lot: 30 },
+  { name: "CRUDE", cmp: 8571, d: 139, net: 50.04, lot: 100 },
+  { name: "NATURAL GAS", cmp: 281, d: 80, net: 9.88, lot: 1250 },
+  { name: "COPPER", cmp: 1378, d: 72, net: 17.74, lot: 2500 }
+];
 
-    document.getElementById("total-up").innerText = totalUp.toFixed(2);
-    document.getElementById("total-down").innerText = totalDown.toFixed(2);
+function calculateLevels(item) {
+  document.getElementById("selected-name").innerText = item.name;
+  document.getElementById("lot-size").innerText = item.lot;
+  document.getElementById("cmp-val").innerText = item.cmp;
+  document.getElementById("net-val").innerText = item.net;
+
+  document.getElementById("up-l1").innerText = (item.cmp + item.net).toFixed(2);
+  document.getElementById("down-l1").innerText = (item.cmp - item.net).toFixed(2);
+
+  document.getElementById("up-l2").innerText = (item.cmp + (item.net * 2)).toFixed(2);
+  document.getElementById("down-l2").innerText = (item.cmp - (item.net * 2)).toFixed(2);
+
+  document.getElementById("up-l3").innerText = (item.cmp + (item.net * 3)).toFixed(2);
+  document.getElementById("down-l3").innerText = (item.cmp - (item.net * 3)).toFixed(2);
 }
+
+// Render buttons
+const container = document.getElementById("commodity-buttons");
+mcxData.forEach((item, index) => {
+  const btn = document.createElement("button");
+  btn.className = "btn" + (index === 0 ? " active" : "");
+  btn.innerText = item.name;
+  btn.onclick = () => {
+    document.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    calculateLevels(item);
+  };
+  container.appendChild(btn);
+});
+
+// Initial load
+calculateLevels(mcxData[0]);
+</script>
+
+</body>
+</html>

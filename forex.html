@@ -1,113 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forex Market Range Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-900 text-white min-h-screen">
-
-  <div id="navbar"></div>
-
-  <div class="max-w-5xl mx-auto p-6 mt-6">
-    <div class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
-      <h1 class="text-2xl font-bold text-purple-400 text-center uppercase mb-6">Forex Market Range Calculator</h1>
-
-      <div id="forex-buttons" class="flex flex-wrap gap-2 justify-center bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700"></div>
-
-      <div class="bg-purple-600 text-black p-6 rounded-t-xl text-center">
-        <h2 id="selected-name" class="text-3xl font-black mb-3">EUR/USD</h2>
-        <div class="flex justify-center gap-6">
-          <div class="bg-slate-100 px-6 py-2 rounded text-black font-bold">LOT SIZE: <span id="lot-size">100000</span></div>
-          <div class="bg-black text-white px-6 py-2 rounded font-bold">LIVE CMP: <span id="cmp-val">1.0850</span></div>
-        </div>
-      </div>
-
-      <div class="overflow-x-auto bg-slate-800 rounded-b-xl p-4 border-t border-slate-700">
-        <table class="w-full text-left">
-          <thead>
-            <tr class="bg-slate-900 text-slate-400 text-sm">
-              <th class="p-3">PAIR</th>
-              <th class="p-3">LOT</th>
-              <th class="p-3">CMP</th>
-              <th class="p-3">LEVEL</th>
-              <th class="p-3">UP LEVEL</th>
-              <th class="p-3">DOWN LEVEL</th>
-              <th class="p-3">ACTION</th>
-            </tr>
-          </thead>
-          <tbody id="levels-table-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script src="nav.js"></script>
-  <script>
-    const forexData = [
-      { name: "EUR/USD", cmp: 1.0850, net: 0.0035, lot: 100000 },
-      { name: "GBP/USD", cmp: 1.2650, net: 0.0045, lot: 100000 },
-      { name: "USD/JPY", cmp: 155.20, net: 0.6500, lot: 100000 },
-      { name: "USD/INR", cmp: 83.95, net: 0.1500, lot: 1000 },
-      { name: "AUD/USD", cmp: 0.6580, net: 0.0030, lot: 100000 },
-      { name: "USD/CAD", cmp: 1.3680, net: 0.0040, lot: 100000 }
-    ];
-
-    function renderButtons() {
-      const container = document.getElementById("forex-buttons");
-      container.innerHTML = "";
-      forexData.forEach((item, index) => {
-        const btn = document.createElement("button");
-        btn.className = `px-4 py-2 text-sm font-bold rounded border ${index === 0 ? 'bg-purple-500 text-black border-purple-500' : 'bg-slate-800 text-white border-slate-600 hover:border-purple-400'}`;
-        btn.innerText = item.name;
-        btn.onclick = () => {
-          document.querySelectorAll("#forex-buttons button").forEach(b => {
-            b.className = "px-4 py-2 text-sm font-bold rounded border bg-slate-800 text-white border-slate-600";
-          });
-          btn.className = "px-4 py-2 text-sm font-bold rounded border bg-purple-500 text-black border-purple-500";
-          calculateAndDisplay(item);
-        };
-        container.appendChild(btn);
-      });
-      if (forexData.length > 0) calculateAndDisplay(forexData[0]);
-    }
-
-    function calculateAndDisplay(item) {
-      document.getElementById("selected-name").innerText = item.name;
-      document.getElementById("lot-size").innerText = item.lot;
-      document.getElementById("cmp-val").innerText = item.cmp;
-
-      const tableBody = document.getElementById("levels-table-body");
-      tableBody.innerHTML = "";
-
-      const levels = [
-        { label: "L1 (Range A)", mult: 1 },
-        { label: "L2 (Range B)", mult: 2 },
-        { label: "L3 (Range C)", mult: 3 }
-      ];
-
-      levels.forEach(lvl => {
-        const upLevel = (item.cmp + (item.net * lvl.mult)).toFixed(4);
-        const downLevel = (item.cmp - (item.net * lvl.mult)).toFixed(4);
-        const waText = encodeURIComponent(`*Forex ${item.name}* Level: ${lvl.label}\nCMP: ${item.cmp}\nUP: ${upLevel}\nDOWN: ${downLevel}`);
-
-        const row = `
-          <tr class="border-b border-slate-700">
-            <td class="p-3 font-bold text-purple-400">${item.name}</td>
-            <td class="p-3">${item.lot}</td>
-            <td class="p-3">${item.cmp}</td>
-            <td class="p-3">${lvl.label}</td>
-            <td class="p-3 font-bold text-emerald-400">${upLevel}</td>
-            <td class="p-3 font-bold text-rose-500">${downLevel}</td>
-            <td class="p-3"><a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-bold inline-block">💬 WhatsApp</a></td>
-          </tr>
-        `;
-        tableBody.innerHTML += row;
-      });
-    }
-
-    renderButtons();
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/" rel="noopener nofollow" target="_blank"><span class="blue-text">World markets</span></a> by TradingView</div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+  {
+  "lineWidth": 2,
+  "lineType": 0,
+  "chartType": "area",
+  "fontColor": "rgb(106, 109, 120)",
+  "gridLineColor": "rgba(46, 46, 46, 0.06)",
+  "volumeUpColor": "rgba(34, 171, 148, 0.5)",
+  "volumeDownColor": "rgba(247, 82, 95, 0.5)",
+  "backgroundColor": "#ffffff",
+  "widgetFontColor": "#0F0F0F",
+  "upColor": "#22ab94",
+  "downColor": "#f7525f",
+  "borderUpColor": "#22ab94",
+  "borderDownColor": "#f7525f",
+  "wickUpColor": "#22ab94",
+  "wickDownColor": "#f7525f",
+  "colorTheme": "light",
+  "isTransparent": false,
+  "locale": "en",
+  "chartOnly": false,
+  "scalePosition": "right",
+  "scaleMode": "Normal",
+  "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+  "valuesTracking": "1",
+  "changeMode": "price-and-percent",
+  "symbols": [
+    [
+      "FX:XAGUSD|1D"
+    ],
+    [
+      "FXPRO:XTIUSD|1D"
+    ],
+    [
+      "FOREXCOM:XAUUSD|1D"
+    ],
+    [
+      "COINBASE:BTCUSD|1D"
+    ],
+    [
+      "COINBASE:ETHUSD|1D"
+    ],
+    [
+      "FOREXCOM:EURUSD|1D"
+    ],
+    [
+      "FOREXCOM:USDJPY|1D"
+    ],
+    [
+      "FOREXCOM:EURJPY|1D"
+    ],
+    [
+      "FOREXCOM:CADJPY|1D"
+    ],
+    [
+      "FOREXCOM:CHFJPY|1D"
+    ],
+    [
+      "FOREXCOM:NZDJPY|1D"
+    ],
+    [
+      "FPMARKETS:XNGUSD|1D"
+    ],
+    [
+      "FOREXCOM:AUDJPY|1D"
+    ]
+  ],
+  "dateRanges": [
+    "1d|1",
+    "1m|30",
+    "3m|60",
+    "12m|1D",
+    "60m|1W",
+    "all|1M"
+  ],
+  "fontSize": "10",
+  "headerFontSize": "medium",
+  "autosize": true,
+  "width": "100%",
+  "height": "100%",
+  "noTimeScale": false,
+  "hideDateRanges": false,
+  "hideMarketStatus": false,
+  "hideSymbolLogo": false
+}
   </script>
-</body>
-</html>
+</div>
+<!-- TradingView Widget END -->

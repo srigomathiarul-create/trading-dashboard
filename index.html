@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOREX DASHBOARD</title>
+    <title>FOREX LIVE</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #0f0f0f; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #ffffff; }
-        .header { text-align: center; padding: 15px; background: #000000; color: #ffd700; font-weight: bold; font-size: 1.2rem; border-bottom: 2px solid #ffd700; text-transform: uppercase; }
-        .main-container { padding: 15px; display: flex; flex-direction: column; gap: 20px; }
-        .section-title { font-size: 1rem; color: #ffd700; font-weight: 600; padding-left: 5px; border-left: 3px solid #ffd700; margin-bottom: 10px; text-transform: uppercase; }
-        .widget-box { background: #131722; border-radius: 8px; overflow: hidden; border: 1px solid #2a2e39; height: 450px; }
-        .widget-box-large { background: #131722; border-radius: 8px; overflow: hidden; border: 1px solid #2a2e39; height: 500px; }
-        iframe { border: none; width: 100%; height: 100%; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000000; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header { text-align: center; padding: 12px; background: #ffd700; color: #000000; font-weight: bold; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.5); position: relative; z-index: 10; }
+        .chart-container { width: 100%; height: calc(100% - 47px); background: #131722; position: relative; }
+        #tradingview_advanced { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
-    <!-- Header name changed to FOREX as requested -->
+    <!-- Header name strictly changed to FOREX -->
     <div class="header">FOREX</div>
 
-    <div class="main-container">
-        
-        <!-- SECTION 1: LIVE ADVANCED CHART USING TRADINGVIEW SECURE EMBED -->
-        <div>
-            <div class="section-title">Live Advanced Chart</div>
-            <div class="widget-box">
-                <iframe src="https://tradingview.com"></iframe>
-            </div>
-        </div>
-
-        <!-- SECTION 2: LIVE RATES AND TICKER SCRIPT ALTERNATIVE -->
-        <div>
-            <div class="section-title">Forex & Commodity Live Rates</div>
-            <div class="widget-box-large">
-                <iframe src="https://tradingview.com"></iframe>
-            </div>
-        </div>
-
+    <!-- 100% Full-Screen Advanced Chart Container -->
+    <div class="chart-container">
+        <div id="tradingview_advanced"></div>
     </div>
+
+    <!-- Safe Cross-Origin Script Standard Library -->
+    <script type="text/javascript" src="https://tradingview.com"></script>
+    <script type="text/javascript">
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "OANDA:XAUUSD",
+            "interval": "5",
+            "timezone": "Asia/Kolkata",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_advanced"
+        });
+    </script>
+
 </body>
 </html>

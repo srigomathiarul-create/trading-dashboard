@@ -1,3 +1,140 @@
-<script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-market-overview.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSN LIVE MARKET</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #0f0f0f; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #ffffff; }
+        .header { text-align: center; padding: 15px; background: #000000; color: #ffd700; font-weight: bold; font-size: 1.2rem; border-bottom: 2px solid #ffd700; }
+        .ticker-container { background: #131722; padding: 5px 0; border-bottom: 1px solid #2a2e39; }
+        .main-container { padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 1rem; color: #ffd700; font-weight: 600; padding-left: 5px; border-left: 3px solid #ffd700; margin-bottom: 10px; text-transform: uppercase; }
+        .widget-box { background: #131722; border-radius: 8px; overflow: hidden; border: 1px solid #2a2e39; }
+    </style>
+</head>
+<body>
 
-<tv-market-overview symbol-sectors='[{"sectionName":"Indices","symbols":[]},{"sectionName":"Stocks","symbols":["NASDAQ:AAPL","NASDAQ:ADBE","NASDAQ:NVDA","NASDAQ:TSLA"]},{"sectionName":"Crypto","symbols":["BITSTAMP:BTCUSD","BITSTAMP:ETHUSD","CRYPTO:XRPUSD"]},{"sectionName":"forex","symbols":[]},{"sectionName":"mcx","symbols":["OANDA:XAUUSD","FX:XAGUSD"]}]'></tv-market-overview>
+    <div class="header">BSN LIVE MARKET</div>
+
+    <!-- LIVE TICKER TAPE -->
+    <div class="ticker-container">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://tradingview.com" async>
+            {
+                "symbols": [
+                    {"proName": "OANDA:XAUUSD", "title": "GOLD"},
+                    {"proName": "OANDA:XAGUSD", "title": "SILVER"},
+                    {"proName": "COINBASE:BTCUSD", "title": "BTC"},
+                    {"proName": "FX:USDJPY", "title": "USDJPY"}
+                ],
+                "showSymbolLogo": true,
+                "colorTheme": "dark",
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "locale": "en"
+            }
+            </script>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- SECTION 1: ADVANCED LIVE CHART -->
+        <div>
+            <div class="section-title">Live Advanced Chart</div>
+            <div class="widget-box">
+                <div class="tradingview-widget-container" style="height:450px;">
+                    <div id="tradingview_advanced_chart" style="height:450px;"></div>
+                    <script type="text/javascript" src="https://tradingview.com"></script>
+                    <script type="text/javascript">
+                    new TradingView.widget({
+                        "width": "100%",
+                        "height": 450,
+                        "symbol": "FX:USDJPY",
+                        "interval": "5",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "enable_publishing": false,
+                        "hide_side_toolbar": false,
+                        "allow_symbol_change": true,
+                        "container_id": "tradingview_advanced_chart"
+                    });
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: ALL SCRIPS LIVE QUOTES -->
+        <div>
+            <div class="section-title">Forex & Commodity Rates</div>
+            <div class="widget-box">
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://tradingview.com" async>
+                    {
+                        "width": "100%",
+                        "height": "650",
+                        "symbolsGroups": [
+                            {
+                                "name": "COMMODITIES & CRYPTO",
+                                "symbols": [
+                                    { "name": "OANDA:XAUUSD", "displayName": "GOLD" },
+                                    { "name": "OANDA:XAGUSD", "displayName": "SILVER" },
+                                    { "name": "FXPRO:XTIUSD", "displayName": "CRUDE OIL" },
+                                    { "name": "FX:XNGUSD", "displayName": "NATURAL GAS" },
+                                    { "name": "COINBASE:BTCUSD", "displayName": "BTC USD" },
+                                    { "name": "COINBASE:ETHUSD", "displayName": "ETH USD" }
+                                ]
+                            },
+                            {
+                                "name": "FOREX JPY PAIRS",
+                                "symbols": [
+                                    { "name": "FX:USDJPY", "displayName": "USD JPY" },
+                                    { "name": "OANDA:AUDJPY", "displayName": "AUD JPY" },
+                                    { "name": "OANDA:GBPJPY", "displayName": "GBP JPY" },
+                                    { "name": "OANDA:EURJPY", "displayName": "EUR JPY" },
+                                    { "name": "OANDA:NZDJPY", "displayName": "NZD JPY" },
+                                    { "name": "OANDA:CADJPY", "displayName": "CAD JPY" },
+                                    { "name": "OANDA:CHFJPY", "displayName": "CHF JPY" }
+                                ]
+                            }
+                        ],
+                        "colorTheme": "dark",
+                        "isTransparent": true,
+                        "locale": "en"
+                    }
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: TECHNICAL ANALYSIS GAUGE -->
+        <div>
+            <div class="section-title">Market Technical Summary</div>
+            <div class="widget-box">
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://tradingview.com" async>
+                    {
+                        "interval": "15m",
+                        "width": "100%",
+                        "isTransparent": true,
+                        "height": "400",
+                        "symbol": "FX:USDJPY",
+                        "showIntervalTabs": true,
+                        "displayMode": "single",
+                        "locale": "en",
+                        "colorTheme": "dark"
+                    }
+                    </script>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
